@@ -42,7 +42,7 @@ Pot.prototype.addTableBets = function(players) {
   // Trying to find the smallest bet of the player
   // and if all the bets are equal
   for (var i in players) {
-    if (players[i] && players[i].public.bet) {
+    if (players[i] && players[i].public.inHand && players[i].public.bet) {
       numContributors += 1;
       if (!smallestBet) {
         smallestBet = players[i].public.bet;
@@ -73,7 +73,8 @@ Pot.prototype.addTableBets = function(players) {
       if (players[i] && players[i].public.bet) {
         this.pots[currentPot].amount += players[i].public.bet;
         players[i].public.bet = 0;
-        if (this.pots[currentPot].contributors.indexOf(players[i].seat) < 0) {
+        if (players[i].public.inHand &&
+            this.pots[currentPot].contributors.indexOf(players[i].seat) < 0) {
           this.pots[currentPot].contributors.push(players[i].seat);
         }
       }
@@ -84,9 +85,15 @@ Pot.prototype.addTableBets = function(players) {
     // and recursively add the bets that remained, to the new pot
     for (var i in players) {
       if (players[i] && players[i].public.bet) {
-        this.pots[currentPot].amount += smallestBet;
-        players[i].public.bet = players[i].public.bet - smallestBet;
-        if (this.pots[currentPot].contributors.indexOf(players[i].seat) < 0) {
+        if (players[i].public.bet <= smallestBet) {
+          this.pots[currentPot].amount += players[i].public.bet;
+          players[i].public.bet = 0;
+        } else {
+          this.pots[currentPot].amount += smallestBet;
+          players[i].public.bet = players[i].public.bet - smallestBet;
+        }
+        if (players[i].public.inHand &&
+            this.pots[currentPot].contributors.indexOf(players[i].seat) < 0) {
           this.pots[currentPot].contributors.push(players[i].seat);
         }
       }
