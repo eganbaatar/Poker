@@ -1,7 +1,7 @@
 /**
  * The pot object
  */
-var Pot = function() {
+var Pot = function () {
   // The pot may be split to several amounts, since not all players
   // have the same money on the table
   // Each portion of the pot has an amount and an array of the
@@ -10,15 +10,15 @@ var Pot = function() {
   this.pots = [
     {
       amount: 0,
-      contributors: []
-    }
+      contributors: [],
+    },
   ];
 };
 
 /**
  * Method that resets the pot to its initial state
  */
-Pot.prototype.reset = function() {
+Pot.prototype.reset = function () {
   this.pots.length = 1;
   this.pots[0].amount = 0;
   this.pots[0].contributors = [];
@@ -28,7 +28,7 @@ Pot.prototype.reset = function() {
  * Method that gets the bets of the players and adds them to the pot
  * @param array players (the array of the tables as it exists in the table)
  */
-Pot.prototype.addTableBets = function(players) {
+Pot.prototype.addTableBets = function (players) {
   // Getting the current pot (the one in which new bets should be added)
   var currentPot = this.pots.length - 1;
 
@@ -57,11 +57,13 @@ Pot.prototype.addTableBets = function(players) {
   }
 
   // If the number of contributors is less than the last round, create a new empty pot
-  if (numContributors &&
-      numContributors < this.pots[currentPot].contributors.length) {
+  if (
+    numContributors &&
+    numContributors < this.pots[currentPot].contributors.length
+  ) {
     this.pots.push({
       amount: 0,
-      contributors: []
+      contributors: [],
     });
     currentPot += 1;
   }
@@ -73,8 +75,10 @@ Pot.prototype.addTableBets = function(players) {
       if (players[i] && players[i].public.bet) {
         this.pots[currentPot].amount += players[i].public.bet;
         players[i].public.bet = 0;
-        if (players[i].public.inHand &&
-            this.pots[currentPot].contributors.indexOf(players[i].seat) < 0) {
+        if (
+          players[i].public.inHand &&
+          this.pots[currentPot].contributors.indexOf(players[i].seat) < 0
+        ) {
           this.pots[currentPot].contributors.push(players[i].seat);
         }
       }
@@ -92,8 +96,10 @@ Pot.prototype.addTableBets = function(players) {
           this.pots[currentPot].amount += smallestBet;
           players[i].public.bet = players[i].public.bet - smallestBet;
         }
-        if (players[i].public.inHand &&
-            this.pots[currentPot].contributors.indexOf(players[i].seat) < 0) {
+        if (
+          players[i].public.inHand &&
+          this.pots[currentPot].contributors.indexOf(players[i].seat) < 0
+        ) {
           this.pots[currentPot].contributors.push(players[i].seat);
         }
       }
@@ -102,7 +108,7 @@ Pot.prototype.addTableBets = function(players) {
     // Creating a new pot
     this.pots.push({
       amount: 0,
-      contributors: []
+      contributors: [],
     });
 
     // Recursion
@@ -114,7 +120,7 @@ Pot.prototype.addTableBets = function(players) {
  * Adds the player's bets to the pot
  * @param {[type]} player [description]
  */
-Pot.prototype.addPlayersBets = function(player) {
+Pot.prototype.addPlayersBets = function (player) {
   // Getting the current pot (the one in which new bets should be added)
   var currentPot = this.pots.length - 1;
 
@@ -126,7 +132,7 @@ Pot.prototype.addPlayersBets = function(player) {
   }
 };
 
-Pot.prototype.destributeToWinners = function(players, firstPlayerToAct) {
+Pot.prototype.destributeToWinners = function (players, firstPlayerToAct) {
   var potsCount = this.pots.length;
   var messages = [];
 
@@ -212,7 +218,7 @@ Pot.prototype.destributeToWinners = function(players, firstPlayerToAct) {
  * (e.g. everyone has folded)
  * @param object  winner
  */
-Pot.prototype.giveToWinner = function(winner) {
+Pot.prototype.giveToWinner = function (winner) {
   var potsCount = this.pots.length;
   var totalAmount = 0;
 
@@ -229,7 +235,7 @@ Pot.prototype.giveToWinner = function(winner) {
  * Removing a player from all the pots
  * @param  number   seat
  */
-Pot.prototype.removePlayer = function(seat) {
+Pot.prototype.removePlayer = function (seat) {
   var potsCount = this.pots.length;
   for (var i = 0; i < potsCount; i++) {
     var placeInArray = this.pots[i].contributors.indexOf(seat);
@@ -239,7 +245,7 @@ Pot.prototype.removePlayer = function(seat) {
   }
 };
 
-Pot.prototype.isEmpty = function() {
+Pot.prototype.isEmpty = function () {
   return !this.pots[0].amount;
 };
 

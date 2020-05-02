@@ -4,7 +4,7 @@
  * cellNumber: The number of the cell in the grid (used for styles)
  */
 app.directive("seat", [
-  function() {
+  function () {
     return {
       restrict: "E",
       templateUrl: "/partials/seat.html",
@@ -18,13 +18,13 @@ app.directive("seat", [
         sittingOnTable: "=",
         dealerSeat: "=",
         notifications: "=",
-        showBuyInModal: "&"
+        showBuyInModal: "&",
       },
-      link: function(scope, element, attributes) {
+      link: function (scope, element, attributes) {
         scope.seatIndex = parseInt(attributes.seatIndex);
         scope.cellNumber = parseInt(attributes.cellNumber);
 
-        scope.getCardClass = function(seat, card) {
+        scope.getCardClass = function (seat, card) {
           console.log(scope.myCards[card]);
           if (scope.mySeat === seat) {
             return scope.myCards[card];
@@ -40,7 +40,7 @@ app.directive("seat", [
           }
         };
 
-        scope.seatOccupied = function(seat) {
+        scope.seatOccupied = function (seat) {
           return (
             !scope.sittingOnTable ||
             (typeof scope.player !== "undefinde" &&
@@ -48,7 +48,7 @@ app.directive("seat", [
               scope.player.name)
           );
         };
-      }
+      },
     };
-  }
+  },
 ]);

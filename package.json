@@ -18,5 +18,8 @@
     "less": "~2.0.0",
     "less-middleware": "~1.0.4",
     "socket.io": "~1.2.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.0.5"
   }
 }
