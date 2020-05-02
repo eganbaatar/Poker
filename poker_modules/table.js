@@ -16,7 +16,7 @@ var Deck = require("./deck"),
  * @param int 		minActionTimeout (Maximum time in milliseconds before a player is reminded to act, set to zero to disable)
  * @param int 		maxActionTimeout (Minimum time in milliseconds before a player is reminded to act)
  */
-var Table = function(
+var Table = function (
   id,
   name,
   eventEmitter,
@@ -91,8 +91,8 @@ var Table = function(
     log: {
       message: "",
       seat: "",
-      action: ""
-    }
+      action: "",
+    },
   };
   // Initializing the empty seats
   for (var i = 0; i < this.public.seatsCount; i++) {
@@ -101,13 +101,13 @@ var Table = function(
 };
 
 // The function that emits the events of the table
-Table.prototype.emitEvent = function(eventName, eventData) {
+Table.prototype.emitEvent = function (eventName, eventData) {
   this.eventEmitter(eventName, eventData);
   this.log({
     message: "",
     action: "",
     seat: "",
-    notification: ""
+    notification: "",
   });
 };
 
@@ -117,7 +117,7 @@ Table.prototype.emitEvent = function(eventName, eventData) {
  * @param  string|array status (the status of the player who should be found)
  * @return number|null
  */
-Table.prototype.findNextPlayer = function(offset, status) {
+Table.prototype.findNextPlayer = function (offset, status) {
   offset = typeof offset !== "undefined" ? offset : this.public.activeSeat;
   status = typeof status !== "undefined" ? status : "inHand";
 
@@ -171,7 +171,7 @@ Table.prototype.findNextPlayer = function(offset, status) {
  * @param  string|array status (the status of the player who should be found)
  * @return number|null
  */
-Table.prototype.findPreviousPlayer = function(offset, status) {
+Table.prototype.findPreviousPlayer = function (offset, status) {
   offset = typeof offset !== "undefined" ? offset : this.public.activeSeat;
   status = typeof status !== "undefined" ? status : "inHand";
 
@@ -222,7 +222,7 @@ Table.prototype.findPreviousPlayer = function(offset, status) {
 /**
  * Method that starts a new game
  */
-Table.prototype.initializeRound = function(changeDealer) {
+Table.prototype.initializeRound = function (changeDealer) {
   changeDealer = typeof changeDealer == "undefined" ? true : changeDealer;
 
   if (this.playersSittingInCount > 1) {
@@ -280,7 +280,7 @@ Table.prototype.initializeRound = function(changeDealer) {
 /**
  * Method that starts the "small blind" round
  */
-Table.prototype.initializeSmallBlind = function() {
+Table.prototype.initializeSmallBlind = function () {
   // Set the table phase to 'smallBlind'
   this.public.phase = "smallBlind";
 
@@ -300,7 +300,7 @@ Table.prototype.initializeSmallBlind = function() {
 /**
  * Method that starts the "small blind" round
  */
-Table.prototype.initializeBigBlind = function() {
+Table.prototype.initializeBigBlind = function () {
   // Set the table phase to 'bigBlind'
   this.public.phase = "bigBlind";
   this.actionToNextPlayer();
@@ -309,7 +309,7 @@ Table.prototype.initializeBigBlind = function() {
 /**
  * Method that starts the "preflop" round
  */
-Table.prototype.initializePreflop = function() {
+Table.prototype.initializePreflop = function () {
   // Set the table phase to 'preflop'
   this.public.phase = "preflop";
   var currentPlayer = this.public.activeSeat;
@@ -332,7 +332,7 @@ Table.prototype.initializePreflop = function() {
 /**
  * Method that starts the next phase of the round
  */
-Table.prototype.initializeNextPhase = function() {
+Table.prototype.initializeNextPhase = function () {
   switch (this.public.phase) {
     case "preflop":
       this.public.phase = "flop";
@@ -351,7 +351,7 @@ Table.prototype.initializeNextPhase = function() {
     message: this.public.board,
     action: "",
     seat: "",
-    notification: ""
+    notification: "",
   });
   this.pot.addTableBets(this.seats);
   this.public.biggestBet = 0;
@@ -361,7 +361,7 @@ Table.prototype.initializeNextPhase = function() {
   } else {
     this.public.activeSeat = this.findNextPlayer(this.public.dealerSeat, [
       "chipsInPlay",
-      "inHand"
+      "inHand",
     ]);
   }
   this.lastPlayerToAct = this.findPreviousPlayer(this.public.activeSeat);
@@ -370,7 +370,7 @@ Table.prototype.initializeNextPhase = function() {
   // If all other players are all in, there should be no actions. Move to the next round.
   if (this.otherPlayersAreAllIn()) {
     var that = this;
-    setTimeout(function() {
+    setTimeout(function () {
       that.endPhase();
     }, 1000);
   } else {
@@ -381,11 +381,11 @@ Table.prototype.initializeNextPhase = function() {
 /**
  * Making the next player the active one
  */
-Table.prototype.actionToNextPlayer = function() {
+Table.prototype.actionToNextPlayer = function () {
   var oldActiveSeat = this.public.activeSeat;
   this.public.activeSeat = this.findNextPlayer(this.public.activeSeat, [
     "chipsInPlay",
-    "inHand"
+    "inHand",
   ]);
 
   if (this.public.activeSeat === null) {
@@ -395,13 +395,15 @@ Table.prototype.actionToNextPlayer = function() {
   }
 
   if (this.lastPlayerToAct < 10) {
-    if ((oldActiveSeat === this.public.activeSeat) ||
-        (oldActiveSeat < this.lastPlayerToAct &&
-         this.lastPlayerToAct < this.public.activeSeat) ||
-        (this.public.activeSeat < oldActiveSeat &&
-         oldActiveSeat < this.lastPlayerToAct) ||
-        (this.lastPlayerToAct < this.public.activeSeat &&
-         this.public.activeSeat < oldActiveSeat)) {
+    if (
+      oldActiveSeat === this.public.activeSeat ||
+      (oldActiveSeat < this.lastPlayerToAct &&
+        this.lastPlayerToAct < this.public.activeSeat) ||
+      (this.public.activeSeat < oldActiveSeat &&
+        oldActiveSeat < this.lastPlayerToAct) ||
+      (this.lastPlayerToAct < this.public.activeSeat &&
+        this.public.activeSeat < oldActiveSeat)
+    ) {
       this.endPhase();
       return;
     }
@@ -443,7 +445,7 @@ Table.prototype.actionToNextPlayer = function() {
 /**
  * The phase when the players show their hands until a winner is found
  */
-Table.prototype.showdown = function() {
+Table.prototype.showdown = function () {
   this.pot.addTableBets(this.seats);
 
   var currentPlayer = this.findNextPlayer(this.public.dealerSeat);
@@ -467,21 +469,21 @@ Table.prototype.showdown = function() {
       message: messages[i],
       action: "",
       seat: "",
-      notification: ""
+      notification: "",
     });
     this.emitEvent("table-data", this.public);
   }
 
   var that = this;
-  setTimeout(function() {
+  setTimeout(function () {
     that.endRound();
-  }, 6000);
+  }, 10000);
 };
 
 /**
  * Ends the current phase of the round
  */
-Table.prototype.endPhase = function() {
+Table.prototype.endPhase = function () {
   switch (this.public.phase) {
     case "preflop":
     case "flop":
@@ -498,7 +500,7 @@ Table.prototype.endPhase = function() {
  * When a player posts the small blind
  * @param int seat
  */
-Table.prototype.playerPostedSmallBlind = function() {
+Table.prototype.playerPostedSmallBlind = function () {
   var bet =
     this.seats[this.public.activeSeat].public.chipsInPlay >=
     this.public.smallBlind
@@ -511,7 +513,7 @@ Table.prototype.playerPostedSmallBlind = function() {
       " posted the small blind",
     action: "bet",
     seat: this.public.activeSeat,
-    notification: "Posted blind"
+    notification: "Posted blind",
   });
   this.public.biggestBet =
     this.public.biggestBet < bet ? bet : this.public.biggestBet;
@@ -523,7 +525,7 @@ Table.prototype.playerPostedSmallBlind = function() {
  * When a player posts the big blind
  * @param int seat
  */
-Table.prototype.playerPostedBigBlind = function() {
+Table.prototype.playerPostedBigBlind = function () {
   var bet =
     this.seats[this.public.activeSeat].public.chipsInPlay >=
     this.public.bigBlind
@@ -535,7 +537,7 @@ Table.prototype.playerPostedBigBlind = function() {
       this.seats[this.public.activeSeat].public.name + " posted the big blind",
     action: "bet",
     seat: this.public.activeSeat,
-    notification: "Posted blind"
+    notification: "Posted blind",
   });
   this.public.biggestBet =
     this.public.biggestBet < bet ? bet : this.public.biggestBet;
@@ -546,13 +548,13 @@ Table.prototype.playerPostedBigBlind = function() {
 /**
  * Checks if the round should continue after a player has folded
  */
-Table.prototype.playerFolded = function() {
+Table.prototype.playerFolded = function () {
   this.seats[this.public.activeSeat].fold();
   this.log({
     message: this.seats[this.public.activeSeat].public.name + " folded",
     action: "fold",
     seat: this.public.activeSeat,
-    notification: "Fold"
+    notification: "Fold",
   });
   this.emitEvent("table-data", this.public);
 
@@ -575,12 +577,12 @@ Table.prototype.playerFolded = function() {
 /**
  * When a player checks
  */
-Table.prototype.playerChecked = function() {
+Table.prototype.playerChecked = function () {
   this.log({
     message: this.seats[this.public.activeSeat].public.name + " checked",
     action: "check",
     seat: this.public.activeSeat,
-    notification: "Check"
+    notification: "Check",
   });
 
   this.emitEvent("table-data", this.public);
@@ -595,7 +597,7 @@ Table.prototype.playerChecked = function() {
 /**
  * When a player calls
  */
-Table.prototype.playerCalled = function() {
+Table.prototype.playerCalled = function () {
   var calledAmount =
     this.public.biggestBet - this.seats[this.public.activeSeat].public.bet;
   this.seats[this.public.activeSeat].bet(calledAmount);
@@ -604,7 +606,7 @@ Table.prototype.playerCalled = function() {
     message: this.seats[this.public.activeSeat].public.name + " called",
     action: "call",
     seat: this.public.activeSeat,
-    notification: "Call"
+    notification: "Call",
   });
 
   this.emitEvent("table-data", this.public);
@@ -619,7 +621,7 @@ Table.prototype.playerCalled = function() {
 /**
  * When a player bets
  */
-Table.prototype.playerBetted = function(amount) {
+Table.prototype.playerBetted = function (amount) {
   this.seats[this.public.activeSeat].bet(amount);
   var oldBiggestBet = this.public.biggestBet;
   this.public.biggestBet =
@@ -633,7 +635,7 @@ Table.prototype.playerBetted = function(amount) {
       this.seats[this.public.activeSeat].public.name + " betted " + amount,
     action: "bet",
     seat: this.public.activeSeat,
-    notification: "Bet " + amount
+    notification: "Bet " + amount,
   });
 
   this.emitEvent("table-data", this.public);
@@ -650,7 +652,7 @@ Table.prototype.playerBetted = function(amount) {
 /**
  * When a player raises
  */
-Table.prototype.playerRaised = function(amount) {
+Table.prototype.playerRaised = function (amount) {
   this.seats[this.public.activeSeat].raise(amount);
   var oldBiggestBet = this.public.biggestBet;
   this.public.biggestBet =
@@ -665,7 +667,7 @@ Table.prototype.playerRaised = function(amount) {
       this.public.biggestBet,
     action: "raise",
     seat: this.public.activeSeat,
-    notification: "Raise " + this.public.lastRaise
+    notification: "Raise " + this.public.lastRaise,
   });
   this.emitEvent("table-data", this.public);
 
@@ -683,7 +685,7 @@ Table.prototype.playerRaised = function(amount) {
  * @param object 	player
  * @param int 		seat
  */
-Table.prototype.playerSatOnTheTable = function(player, seat, chips) {
+Table.prototype.playerSatOnTheTable = function (player, seat, chips) {
   this.seats[seat] = player;
   this.public.seats[seat] = player.public;
 
@@ -699,12 +701,12 @@ Table.prototype.playerSatOnTheTable = function(player, seat, chips) {
  * Adds a player who is sitting on the table, to the game
  * @param int seat
  */
-Table.prototype.playerSatIn = function(seat) {
+Table.prototype.playerSatIn = function (seat) {
   this.log({
     message: this.seats[seat].public.name + " sat in",
     action: "",
     seat: "",
-    notification: ""
+    notification: "",
   });
   this.emitEvent("table-data", this.public);
 
@@ -725,12 +727,12 @@ Table.prototype.playerSatIn = function(seat) {
  * Changes the data of the table when a player leaves
  * @param int seat
  */
-Table.prototype.playerLeft = function(seat) {
+Table.prototype.playerLeft = function (seat) {
   this.log({
     message: this.seats[seat].public.name + " left",
     action: "",
     seat: "",
-    notification: ""
+    notification: "",
   });
 
   // If someone is really sitting on that seat
@@ -772,7 +774,7 @@ Table.prototype.playerLeft = function(seat) {
  * @param int 	seat 			(the numeber of the seat)
  * @param bool 	playerLeft		(flag that shows that the player actually left the table)
  */
-Table.prototype.playerSatOut = function(seat, playerLeft) {
+Table.prototype.playerSatOut = function (seat, playerLeft) {
   // Set the playerLeft parameter to false if it's not specified
   if (typeof playerLeft == "undefined") {
     playerLeft = false;
@@ -784,7 +786,7 @@ Table.prototype.playerSatOut = function(seat, playerLeft) {
       message: this.seats[seat].public.name + " sat out",
       action: "",
       seat: "",
-      notification: ""
+      notification: "",
     });
     this.emitEvent("table-data", this.public);
   }
@@ -831,7 +833,7 @@ Table.prototype.playerSatOut = function(seat, playerLeft) {
   this.emitEvent("table-data", this.public);
 };
 
-Table.prototype.otherPlayersAreAllIn = function() {
+Table.prototype.otherPlayersAreAllIn = function () {
   // Check if the players are all in
   var currentPlayer = this.public.activeSeat;
   var playersAllIn = 0;
@@ -849,7 +851,7 @@ Table.prototype.otherPlayersAreAllIn = function() {
 /**
  * Method that makes the doubly linked list of players
  */
-Table.prototype.removeAllCardsFromPlay = function() {
+Table.prototype.removeAllCardsFromPlay = function () {
   // For each seat
   for (var i = 0; i < this.public.seatsCount; i++) {
     // If a player is sitting on the current seat
@@ -863,7 +865,7 @@ Table.prototype.removeAllCardsFromPlay = function() {
 /**
  * Actions that should be taken when the round has ended
  */
-Table.prototype.endRound = function() {
+Table.prototype.endRound = function () {
   // If there were any bets, they are added to the pot
   this.pot.addTableBets(this.seats);
   if (!this.pot.isEmpty()) {
@@ -894,7 +896,7 @@ Table.prototype.endRound = function() {
 /**
  * Method that stops the game
  */
-Table.prototype.stopGame = function() {
+Table.prototype.stopGame = function () {
   this.public.phase = null;
   this.pot.reset();
   this.public.activeSeat = null;
@@ -909,7 +911,7 @@ Table.prototype.stopGame = function() {
 /**
  * Logs the last event
  */
-Table.prototype.log = function(log) {
+Table.prototype.log = function (log) {
   this.public.log = null;
   this.public.log = log;
 };
