@@ -22,7 +22,7 @@ var session_ = session({
   secret: "keyboard cat",
   resave: true,
   saveUninitialized: true,
-  cookie: {}
+  cookie: {},
 });
 app.use(session_);
 
@@ -32,7 +32,7 @@ if ("development" == app.get("env")) {
 }
 io.use(
   sharedsession(session_, {
-    autoSave: true
+    autoSave: true,
   })
 );
 var players = [];
@@ -44,12 +44,12 @@ server.listen(port);
 console.log("Listening on port " + port);
 
 // The lobby
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
   res.render("index");
 });
 
 // The lobby data (the array of tables and their data)
-app.get("/lobby-data", function(req, res) {
+app.get("/lobby-data", function (req, res) {
   var lobbyTables = [];
   for (var tableId in tables) {
     // Sending the public data of the public tables to the lobby screen
@@ -68,22 +68,22 @@ app.get("/lobby-data", function(req, res) {
 });
 
 // If the table is requested manually, redirect to lobby
-app.get("/table-10/:tableId", function(req, res) {
+app.get("/table-10/:tableId", function (req, res) {
   res.redirect("/");
 });
 
 // If the table is requested manually, redirect to lobby
-app.get("/table-6/:tableId", function(req, res) {
+app.get("/table-6/:tableId", function (req, res) {
   res.redirect("/");
 });
 
 // If the table is requested manually, redirect to lobby
-app.get("/table-2/:tableId", function(req, res) {
+app.get("/table-2/:tableId", function (req, res) {
   res.redirect("/");
 });
 
 // The table data
-app.get("/table-data/:tableId", function(req, res) {
+app.get("/table-data/:tableId", function (req, res) {
   if (
     typeof req.params.tableId !== "undefined" &&
     typeof tables[req.params.tableId] !== "undefined"
@@ -92,12 +92,12 @@ app.get("/table-data/:tableId", function(req, res) {
   }
 });
 
-io.sockets.on("connection", function(socket) {
+io.sockets.on("connection", function (socket) {
   /**
    * When a player enters a room
    * @param object table-data
    */
-  socket.on("enterRoom", function(tableId) {
+  socket.on("enterRoom", function (tableId) {
     if (
       typeof players[socket.id] !== "undefined" &&
       players[socket.id].room === null
@@ -112,7 +112,7 @@ io.sockets.on("connection", function(socket) {
   /**
    * When a player leaves a room
    */
-  socket.on("leaveRoom", function() {
+  socket.on("leaveRoom", function () {
     if (
       typeof players[socket.id] !== "undefined" &&
       players[socket.id].room !== null &&
@@ -128,7 +128,7 @@ io.sockets.on("connection", function(socket) {
   /**
    * When a player disconnects
    */
-  socket.on("disconnect", function() {
+  socket.on("disconnect", function () {
     // If the socket points to a player object
     if (typeof players[socket.id] !== "undefined") {
       // If the player was sitting on a table
@@ -152,7 +152,7 @@ io.sockets.on("connection", function(socket) {
    * When a player leaves the table
    * @param function callback
    */
-  socket.on("leaveTable", function(callback) {
+  socket.on("leaveTable", function (callback) {
     // If the player was sitting on a table
     if (
       players[socket.id].sittingOnTable !== false &&
@@ -174,7 +174,7 @@ io.sockets.on("connection", function(socket) {
    * @param string newScreenName
    * @param function callback
    */
-  socket.on("register", function(newScreenName, callback) {
+  socket.on("register", function (newScreenName, callback) {
     // If a new screen name is posted
     if (socket.handshake.session.player) {
       console.log(socket.handshake.session.player);
@@ -202,7 +202,7 @@ io.sockets.on("connection", function(socket) {
           callback({
             success: true,
             screenName: newScreenName,
-            totalChips: players[socket.id].chips
+            totalChips: players[socket.id].chips,
           });
         } else {
           callback({ success: false, message: "This name is taken" });
@@ -219,7 +219,7 @@ io.sockets.on("connection", function(socket) {
    * When a player requests to sit on a table
    * @param function callback
    */
-  socket.on("sitOnTheTable", function(data, callback) {
+  socket.on("sitOnTheTable", function (data, callback) {
     if (
       // A seat has been specified
       typeof data.seat !== "undefined" &&
@@ -255,7 +255,7 @@ io.sockets.on("connection", function(socket) {
         callback({
           success: false,
           error:
-            "The amount of chips should be between the maximum and the minimum amount of allowed buy in"
+            "The amount of chips should be between the maximum and the minimum amount of allowed buy in",
         });
       else {
         // Give the response to the user
@@ -277,7 +277,7 @@ io.sockets.on("connection", function(socket) {
    * When a player who sits on the table but is not sitting in, requests to sit in
    * @param function callback
    */
-  socket.on("sitIn", function(callback) {
+  socket.on("sitIn", function (callback) {
     if (
       players[socket.id].sittingOnTable !== false &&
       players[socket.id].seat !== null &&
@@ -295,7 +295,7 @@ io.sockets.on("connection", function(socket) {
    * @param bool postedBlind (Shows if the user posted the blind or not)
    * @param function callback
    */
-  socket.on("postBlind", function(postedBlind, callback) {
+  socket.on("postBlind", function (postedBlind, callback) {
     if (players[socket.id].sittingOnTable !== false) {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
@@ -328,7 +328,7 @@ io.sockets.on("connection", function(socket) {
    * When a player checks
    * @param function callback
    */
-  socket.on("check", function(callback) {
+  socket.on("check", function (callback) {
     if (players[socket.id].sittingOnTable !== "undefined") {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
@@ -354,7 +354,7 @@ io.sockets.on("connection", function(socket) {
    * When a player folds
    * @param function callback
    */
-  socket.on("fold", function(callback) {
+  socket.on("fold", function (callback) {
     if (players[socket.id].sittingOnTable !== false) {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
@@ -377,7 +377,7 @@ io.sockets.on("connection", function(socket) {
    * When a player calls
    * @param function callback
    */
-  socket.on("call", function(callback) {
+  socket.on("call", function (callback) {
     if (players[socket.id].sittingOnTable !== "undefined") {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
@@ -402,7 +402,7 @@ io.sockets.on("connection", function(socket) {
    * @param number amount
    * @param function callback
    */
-  socket.on("bet", function(amount, callback) {
+  socket.on("bet", function (amount, callback) {
     if (players[socket.id].sittingOnTable !== "undefined") {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
@@ -434,7 +434,7 @@ io.sockets.on("connection", function(socket) {
    * When a player raises
    * @param function callback
    */
-  socket.on("raise", function(amount, callback) {
+  socket.on("raise", function (amount, callback) {
     if (players[socket.id].sittingOnTable !== "undefined") {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
@@ -471,7 +471,7 @@ io.sockets.on("connection", function(socket) {
    * When a player goes all in
    * @param function callback
    */
-  socket.on("allIn", function(callback) {
+  socket.on("allIn", function (callback) {
     if (players[socket.id].sittingOnTable !== "undefined") {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
@@ -502,19 +502,18 @@ io.sockets.on("connection", function(socket) {
     }
   });
 
-
   /**
    * When a message from a player is sent
    * @param string message
    */
-  socket.on("sendMessage", function(message) {
+  socket.on("sendMessage", function (message) {
     message = message.trim();
     if (message && players[socket.id].room) {
       socket.broadcast
         .to("table-" + players[socket.id].room)
         .emit("receiveMessage", {
           message: htmlEntities(message),
-          sender: players[socket.id].public.name
+          sender: players[socket.id].public.name,
         });
     }
   });
@@ -526,8 +525,8 @@ io.sockets.on("connection", function(socket) {
  * and update the table data in the ui
  * @param string tableId
  */
-var eventEmitter = function(tableId) {
-  return function(eventName, eventData) {
+var eventEmitter = function (tableId) {
+  return function (eventName, eventData) {
     io.sockets.in("table-" + tableId).emit(eventName, eventData);
   };
 };
