@@ -127,10 +127,10 @@ table {
 #table {
   background-color: @brown;
   border-radius: 200px;
-  height: 52%;
+  height: 40%;
   left: 10%;
   position: absolute;
-  top: 15%;
+  top: 5%;
   width: 80%;
   z-index: 0;
   box-shadow: 0 0 25px 0 @dark-purple;
@@ -189,6 +189,10 @@ div.controls {
     float: left;
     width: 25%;
   }
+  div.log-cell {
+      float: left;
+      width: 25%;
+    }
 }
 
 input[type="range"] {
@@ -204,6 +208,21 @@ input[type="range"] {
 
 .table-requirements {
   display: block;
+}
+
+div#logMessages{
+    border: 1px solid;
+    border-radius: 8px;
+    height: 120px;
+    margin: 8px 8px 0 8px;
+    background-color: #fff;
+    padding: 8px;
+    overflow: auto;
+
+    p {
+      margin: 0;
+      word-wrap: break-word;
+    }
 }
 
 div#chat {
@@ -244,13 +263,13 @@ div#chat {
 
 div.player-wrap {
   width: 64%;
-  margin: 36% auto 0;
+  margin: 15% auto 0;
   position: relative;
   &.top {
-    margin-top: 45%;
+    margin-top: 35%;
   }
   &.bottom {
-    margin-top: 22%;
+    margin-top: 0%;
   }
   &.left {
     margin-left: 30%;
@@ -761,7 +780,7 @@ div#board-wrap {
 @media screen and (min-width: 768px) and (max-width: 1024px) {
   #content {
     width: 768px;
-    height: 576px;
+    height: 720px;
   }
 
   body {
@@ -790,6 +809,10 @@ div#board-wrap {
   }
 
   div#chat div#messages {
+    height: 76px;
+  }
+
+  div#logMessages {
     height: 76px;
   }
 
