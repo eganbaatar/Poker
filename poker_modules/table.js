@@ -729,7 +729,7 @@ Table.prototype.playerSatIn = function (seat) {
  */
 Table.prototype.playerLeft = function (seat) {
   this.log({
-    message: this.seats[seat].public.name + " left",
+    message: this.seats[seat].public.name + " left,  chips: " + this.seats[seat].public.chipsInPlay,
     action: "",
     seat: "",
     notification: "",
