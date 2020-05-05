@@ -22,12 +22,12 @@ input[type="number"] {
   border: 1px solid @light-purple;
   border-radius: 5px;
   color: @light-purple;
-  font-size: 1.4em;
 }
 
 #bet-input {
   width: 100%;
-  margin-top: 20px;
+  margin-top: 2px;
+  height: 30px;
 }
 
 input {
@@ -43,14 +43,14 @@ input[type="submit"],
   border: 1px solid @light-purple;
   border-radius: 5px;
   color: @light-purple;
-  font-size: 1.6em;
+  font-size: 1em;
   font-weight: lighter;
   &.small {
     font-size: 1em;
   }
   &.control-button {
     padding: 0;
-    height: 65%;
+    height: 50%;
     width: 85%;
     background-color: @transparent-purple;
     border: 3px solid @light-purple;
@@ -155,6 +155,7 @@ div.row {
     background-color: @felt-green;
     border-radius: 8px;
     z-index: 1;
+    height: 10%;
   }
 }
 
@@ -165,7 +166,7 @@ div.cell {
   position: relative;
 
   button {
-    margin: 22.5% 15%;
+    margin: 10.5% 15%;
   }
 }
 
@@ -182,7 +183,7 @@ div.controls {
   div.double-cell {
     width: 20%;
     .cell-content {
-      padding: 8%;
+      padding-left: 8%;
     }
   }
   div.chat-cell {
@@ -197,7 +198,7 @@ div.controls {
 
 input[type="range"] {
   width: 90%;
-  margin-top: 8%;
+  margin-top: 4%;
   padding: 0;
 }
 
@@ -751,9 +752,10 @@ div#board-wrap {
       }
     }
     .double-cell {
-      width: 40%;
+      width: 20%;
       .cell-content {
-        padding: 4% 8%;
+        padding: 4%;
+        padding-left: 8%;
         input[type="range"] {
           margin-top: 0;
         }
