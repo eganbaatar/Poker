@@ -422,7 +422,7 @@ app.controller("TableController", [
           break;
       }
       if (data.log.message) {
-        var messageBox = document.querySelector("#messages");
+        var messageBox = document.querySelector("#logMessages");
         var messageElement = angular.element(
           '<p class="log-message">' + data.log.message + "</p>"
         );

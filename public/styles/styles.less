@@ -22,12 +22,12 @@ input[type="number"] {
   border: 1px solid @light-purple;
   border-radius: 5px;
   color: @light-purple;
-  font-size: 1.4em;
 }
 
 #bet-input {
   width: 100%;
-  margin-top: 20px;
+  margin-top: 2px;
+  height: 30px;
 }
 
 input {
@@ -43,14 +43,14 @@ input[type="submit"],
   border: 1px solid @light-purple;
   border-radius: 5px;
   color: @light-purple;
-  font-size: 1.6em;
+  font-size: 1em;
   font-weight: lighter;
   &.small {
     font-size: 1em;
   }
   &.control-button {
     padding: 0;
-    height: 65%;
+    height: 50%;
     width: 85%;
     background-color: @transparent-purple;
     border: 3px solid @light-purple;
@@ -127,10 +127,10 @@ table {
 #table {
   background-color: @brown;
   border-radius: 200px;
-  height: 52%;
+  height: 40%;
   left: 10%;
   position: absolute;
-  top: 15%;
+  top: 5%;
   width: 80%;
   z-index: 0;
   box-shadow: 0 0 25px 0 @dark-purple;
@@ -155,6 +155,7 @@ div.row {
     background-color: @felt-green;
     border-radius: 8px;
     z-index: 1;
+    height: 10%;
   }
 }
 
@@ -165,7 +166,7 @@ div.cell {
   position: relative;
 
   button {
-    margin: 22.5% 15%;
+    margin: 10.5% 15%;
   }
 }
 
@@ -182,10 +183,14 @@ div.controls {
   div.double-cell {
     width: 20%;
     .cell-content {
-      padding: 8%;
+      padding-left: 8%;
     }
   }
   div.chat-cell {
+    float: left;
+    width: 25%;
+  }
+  div.log-cell {
     float: left;
     width: 25%;
   }
@@ -193,7 +198,7 @@ div.controls {
 
 input[type="range"] {
   width: 90%;
-  margin-top: 8%;
+  margin-top: 4%;
   padding: 0;
 }
 
@@ -204,6 +209,21 @@ input[type="range"] {
 
 .table-requirements {
   display: block;
+}
+
+div#logMessages {
+  border: 1px solid;
+  border-radius: 8px;
+  height: 120px;
+  margin: 8px 8px 0 8px;
+  background-color: #fff;
+  padding: 8px;
+  overflow: auto;
+
+  p {
+    margin: 0;
+    word-wrap: break-word;
+  }
 }
 
 div#chat {
@@ -244,13 +264,13 @@ div#chat {
 
 div.player-wrap {
   width: 64%;
-  margin: 36% auto 0;
+  margin: 15% auto 0;
   position: relative;
   &.top {
-    margin-top: 45%;
+    margin-top: 35%;
   }
   &.bottom {
-    margin-top: 22%;
+    margin-top: 0%;
   }
   &.left {
     margin-left: 30%;
@@ -732,9 +752,10 @@ div#board-wrap {
       }
     }
     .double-cell {
-      width: 40%;
+      width: 20%;
       .cell-content {
-        padding: 4% 8%;
+        padding: 4%;
+        padding-left: 8%;
         input[type="range"] {
           margin-top: 0;
         }
@@ -761,7 +782,7 @@ div#board-wrap {
 @media screen and (min-width: 768px) and (max-width: 1024px) {
   #content {
     width: 768px;
-    height: 576px;
+    height: 720px;
   }
 
   body {
@@ -790,6 +811,10 @@ div#board-wrap {
   }
 
   div#chat div#messages {
+    height: 76px;
+  }
+
+  div#logMessages {
     height: 76px;
   }
 

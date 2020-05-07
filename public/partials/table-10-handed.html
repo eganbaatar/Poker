@@ -38,7 +38,8 @@
         href="/"
         ng-show="!$root.sittingOnTable"
         ng-click="leaveRoom()"
-        >< Lobby</a
+      >
+        Lobby</a
       >
       <seat
         player="table.seats[0]"
@@ -226,15 +227,7 @@
     </div>
   </div>
   <div class="row controls">
-    <div class="chat-cell">
-      <div id="chat" ng-controller="ChatController">
-        <div id="messages"></div>
-        <form ng-submit="sendMessage()">
-          <input type="text" ng-model="messageText" />
-          <input type="submit" value="↵" />
-        </form>
-      </div>
-    </div>
+    <div class="chat-cell"></div>
     <div class="cell">
       <button
         class="control-button"
@@ -336,6 +329,16 @@
         />
       </div>
     </div>
+  </div>
+  <div class="log-cell">
+    <div id="chat" ng-controller="ChatController">
+      <div id="messages"></div>
+      <form ng-submit="sendMessage()">
+        <input type="text" ng-model="messageText" />
+        <input type="submit" value="↵" />
+      </form>
+    </div>
+    <div id="logMessages"></div>
   </div>
   <div id="audio">
     <audio id="fold-sound" src="/audio/fold.wav" preload="auto" />

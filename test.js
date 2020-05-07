@@ -13,6 +13,7 @@ for (var i = 0; i < 10000; i++) {
 }
 
 fs.writeFileSync("samples.json", JSON.stringify(samples));
+
 // samples.forEach(function (card) {
 //   console.log(card);
 // });
