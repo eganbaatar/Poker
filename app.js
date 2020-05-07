@@ -545,20 +545,7 @@ function htmlEntities(str) {
 
 tables[0] = new Table(
   0,
-  "Sabok",
-  eventEmitter(0),
-  10,
-  6,
-  3,
-  10000,
-  40,
-  false,
-  15000,
-  60000
-);
-tables[1] = new Table(
-  0,
-  "Sangin",
+  "Mongo hevlegch: 10/5 aar",
   eventEmitter(0),
   10,
   10,
@@ -569,15 +556,28 @@ tables[1] = new Table(
   15000,
   60000
 );
+tables[1] = new Table(
+  0,
+  "Mongonii mashin: 100/50 aar",
+  eventEmitter(0),
+  10,
+  100,
+  50,
+  100000,
+  5000,
+  false,
+  15000,
+  60000
+);
 tables[2] = new Table(
   1,
   "Sample 6-handed Table",
   eventEmitter(1),
   6,
-  4,
-  2,
-  400,
-  80,
+  100,
+  50,
+  100000,
+  5000,
   false,
   15000,
   60000
