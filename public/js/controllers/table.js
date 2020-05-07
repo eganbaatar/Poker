@@ -359,7 +359,7 @@ app.controller("TableController", [
     };
 
     $scope.allIn = function () {
-      if (window.confirm("Mikhay goh bokhori?!")) {
+      if (window.confirm("Andaa neeree you?!")) {
         socket.emit("allIn", function (response) {
           if (response.success) {
             sounds.playRaiseSound();
