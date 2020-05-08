@@ -1,5 +1,14 @@
 const event = require('./socket-event');
 
+const isPlayerOnTable(players, pid) => {
+  const playerInfo = players[pid];
+  return (
+    !_.isNil(playerInfo) &&
+    !_.isNil(playerInfo.sittingOnTable) &&
+    playerInfo.sittingOnTable !== false
+  );
+}
+
 /**
  * When a player enters a room
  * @param object table-data

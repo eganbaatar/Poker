@@ -1,28 +1,29 @@
-var express = require("express"),
-  app = express(),
-  server = require("http").createServer(app),
-  io = require("socket.io").listen(server),
-  lessMiddleware = require("less-middleware"),
-  path = require("path"),
-  Table = require("../poker_modules/table"),
-  Player = require("../poker_modules/player");
-var session = require("express-session");
-var sharedsession = require("express-socket.io-session");
-const _ = require("lodash");
-const logger = require("./logger");
-const socket = require("./socket");
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
+const lessMiddleware = require('less-middleware');
+const path = require('path');
+const Table = require('../poker_modules/table');
+const Player = require('../poker_modules/player');
+const session = require('express-session');
+const sharedsession = require('express-socket.io-session');
+const _ = require('lodash');
+const logger = require('./logger');
+const socket = require('./socket');
+const tables = require('./tables');
 
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "jade");
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 app.use(express.favicon());
-app.use(express.logger("dev"));
+app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(app.router);
-app.use(lessMiddleware(__dirname + "/public"));
-app.use(express.static(path.join(__dirname, "public")));
-app.set("trust proxy", 1); // trust first proxy
+app.use(lessMiddleware(__dirname + '/public'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('trust proxy', 1); // trust first proxy
 var session_ = session({
-  secret: "keyboard cat",
+  secret: 'keyboard cat',
   resave: true,
   saveUninitialized: true,
   cookie: {},
@@ -30,7 +31,7 @@ var session_ = session({
 app.use(session_);
 
 // Development Only
-if ("development" == app.get("env")) {
+if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 io.use(
@@ -39,20 +40,19 @@ io.use(
   })
 );
 var players = [];
-var tables = [];
 var eventEmitter = {};
 
 var port = process.env.PORT || 3000;
 server.listen(port);
-logger.info("Listening on port " + port);
+logger.info('Listening on port ' + port);
 
 // The lobby
-app.get("/", function (req, res) {
-  res.render("index");
+app.get('/', function (req, res) {
+  res.render('index');
 });
 
 // The lobby data (the array of tables and their data)
-app.get("/lobby-data", function (req, res) {
+app.get('/lobby-data', function (req, res) {
   var lobbyTables = [];
   for (var tableId in tables) {
     // Sending the public data of the public tables to the lobby screen
@@ -71,25 +71,25 @@ app.get("/lobby-data", function (req, res) {
 });
 
 // If the table is requested manually, redirect to lobby
-app.get("/table-10/:tableId", function (req, res) {
-  res.redirect("/");
+app.get('/table-10/:tableId', function (req, res) {
+  res.redirect('/');
 });
 
 // If the table is requested manually, redirect to lobby
-app.get("/table-6/:tableId", function (req, res) {
-  res.redirect("/");
+app.get('/table-6/:tableId', function (req, res) {
+  res.redirect('/');
 });
 
 // If the table is requested manually, redirect to lobby
-app.get("/table-2/:tableId", function (req, res) {
-  res.redirect("/");
+app.get('/table-2/:tableId', function (req, res) {
+  res.redirect('/');
 });
 
 // The table data
-app.get("/table-data/:tableId", function (req, res) {
+app.get('/table-data/:tableId', function (req, res) {
   if (
-    typeof req.params.tableId !== "undefined" &&
-    typeof tables[req.params.tableId] !== "undefined"
+    typeof req.params.tableId !== 'undefined' &&
+    typeof tables[req.params.tableId] !== 'undefined'
   ) {
     res.send({ table: tables[req.params.tableId].public });
   }
@@ -106,7 +106,7 @@ socket(io);
  */
 var eventEmitter = function (tableId) {
   return function (eventName, eventData) {
-    io.sockets.in("table-" + tableId).emit(eventName, eventData);
+    io.sockets.in('table-' + tableId).emit(eventName, eventData);
   };
 };
 
@@ -116,70 +116,8 @@ var eventEmitter = function (tableId) {
  */
 function htmlEntities(str) {
   return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
-
-function isPlayerOnTable(players, pid) {
-  const playerInfo = players[pid];
-  return (
-    !_.isNil(playerInfo) &&
-    !_.isNil(playerInfo.sittingOnTable) &&
-    playerInfo.sittingOnTable !== false
-  );
-}
-
-tables[0] = new Table(
-  0,
-  "Mongo hevlegch: 10/5 aar",
-  eventEmitter(0),
-  10,
-  10,
-  5,
-  10000,
-  40,
-  false,
-  15000,
-  60000
-);
-tables[1] = new Table(
-  0,
-  "Mongonii mashin: 100/50 aar",
-  eventEmitter(0),
-  10,
-  100,
-  50,
-  100000,
-  5000,
-  false,
-  15000,
-  60000
-);
-tables[2] = new Table(
-  1,
-  "Sample 6-handed Table",
-  eventEmitter(1),
-  6,
-  100,
-  50,
-  100000,
-  5000,
-  false,
-  15000,
-  60000
-);
-tables[3] = new Table(
-  2,
-  "Sample 2-handed Table",
-  eventEmitter(2),
-  2,
-  8,
-  4,
-  800,
-  160,
-  false,
-  15000,
-  60000
-);
