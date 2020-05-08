@@ -728,11 +728,9 @@ Table.prototype.playerSatIn = function (seat) {
  * @param int seat
  */
 Table.prototype.playerLeft = function (seat) {
+  const message = `${this.seats[seat].public.name} left,  chips: ${this.seats[seat].public.chipsInPlay}`;
   this.log({
-    message:
-      this.seats[seat].public.name +
-      " left,  chips: " +
-      this.seats[seat].public.chipsInPlay,
+    message,
     action: "",
     seat: "",
     notification: "",
@@ -915,8 +913,18 @@ Table.prototype.stopGame = function () {
  * Logs the last event
  */
 Table.prototype.log = function (log) {
+  const now = new Date().toLocaleString("de-DE", {
+    timeZone: "Europe/Berlin",
+    hour12: false,
+  });
   this.public.log = null;
-  this.public.log = log;
+
+  // attach time to each log event
+  this.public.log = log.message
+    ? { ...log, message: `${now}: ${log.message}` }
+    : log;
+
+  if (log.message) console.log(`GAMELOG: ${this.public.log.message}`);
 };
 
 module.exports = Table;
