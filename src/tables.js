@@ -1,3 +1,5 @@
+const Table = require('./game/table');
+
 let tables = [];
 
 tables[0] = new Table(
