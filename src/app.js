@@ -8,7 +8,7 @@ const session = require('express-session');
 const sharedsession = require('express-socket.io-session');
 const _ = require('lodash');
 const logger = require('./logger');
-const socket = require('./socket');
+const { socket } = require('./socket');
 const tables = require('./tables');
 
 app.set('views', path.join(__dirname, 'views'));
@@ -37,8 +37,6 @@ io.use(
     autoSave: true,
   })
 );
-var players = [];
-var eventEmitter = {};
 
 var port = process.env.PORT || 3000;
 server.listen(port);
@@ -95,27 +93,3 @@ app.get('/table-data/:tableId', function (req, res) {
 
 // register socket controller
 socket(io);
-
-/**
- * Event emitter function that will be sent to the table objects
- * Tables use the eventEmitter in order to send events to the client
- * and update the table data in the ui
- * @param string tableId
- */
-var eventEmitter = function (tableId) {
-  return function (eventName, eventData) {
-    io.sockets.in('table-' + tableId).emit(eventName, eventData);
-  };
-};
-
-/**
- * Changes certain characters in a string to html entities
- * @param string str
- */
-function htmlEntities(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}

@@ -1,6 +1,7 @@
-var Deck = require('./deck'),
-  Pot = require('./pot');
+const Deck = require('./deck');
+const Pot = require('./pot');
 const logger = require('../src/logger');
+
 /**
  * The table "class"
  * @param string	id (the table id)

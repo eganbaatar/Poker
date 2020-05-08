@@ -1,4 +1,5 @@
 const Table = require('./game/table');
+const { eventEmitter } = require('./socket');
 
 let tables = [];
 

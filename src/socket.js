@@ -1,13 +1,13 @@
 const event = require('./socket-event');
 
-const isPlayerOnTable(players, pid) => {
+const isPlayerOnTable = (players, pid) => {
   const playerInfo = players[pid];
   return (
     !_.isNil(playerInfo) &&
     !_.isNil(playerInfo.sittingOnTable) &&
     playerInfo.sittingOnTable !== false
   );
-}
+};
 
 /**
  * When a player enters a room
@@ -432,6 +432,18 @@ const sendMessage = (message) => {
   }
 };
 
+/**
+ * Changes certain characters in a string to html entities
+ * @param string str
+ */
+function htmlEntities(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 const socketImpl = (io) => {
   io.sockets.on('connection', (socket) => {
     socket.on(event.enterRoom, enterRoom);
@@ -452,4 +464,19 @@ const socketImpl = (io) => {
   });
 };
 
-module.export = socketImpl;
+/**
+ * Event emitter function that will be sent to the table objects
+ * Tables use the eventEmitter in order to send events to the client
+ * and update the table data in the ui
+ * @param string tableId
+ */
+const eventEmitter = (tableId) => {
+  return function (eventName, eventData) {
+    io.sockets.in('table-' + tableId).emit(eventName, eventData);
+  };
+};
+
+module.export = {
+  socketImpl,
+  eventEmitter,
+};
