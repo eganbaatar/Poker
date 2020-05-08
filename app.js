@@ -571,7 +571,7 @@ tables[0] = new Table(
 tables[1] = new Table(
   1,
   "Mongonii mashin: 100/50 aar",
-  eventEmitter(0),
+  eventEmitter(1),
   10,
   100,
   50,
@@ -584,7 +584,7 @@ tables[1] = new Table(
 tables[2] = new Table(
   2,
   "Sample 6-handed Table",
-  eventEmitter(1),
+  eventEmitter(2),
   6,
   100,
   50,
@@ -597,7 +597,7 @@ tables[2] = new Table(
 tables[3] = new Table(
   3,
   "Sample 2-handed Table",
-  eventEmitter(2),
+  eventEmitter(3),
   2,
   8,
   4,
