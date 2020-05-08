@@ -8,6 +8,7 @@ var express = require("express"),
   Player = require("./poker_modules/player");
 var session = require("express-session");
 var sharedsession = require("express-socket.io-session");
+const logger = require("./logger");
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
@@ -41,7 +42,7 @@ var eventEmitter = {};
 
 var port = process.env.PORT || 3000;
 server.listen(port);
-console.log("Listening on port " + port);
+logger.info("Listening on port " + port);
 
 // The lobby
 app.get("/", function (req, res) {
