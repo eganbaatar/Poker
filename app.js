@@ -569,7 +569,7 @@ tables[0] = new Table(
   60000
 );
 tables[1] = new Table(
-  0,
+  1,
   "Mongonii mashin: 100/50 aar",
   eventEmitter(0),
   10,
@@ -582,7 +582,7 @@ tables[1] = new Table(
   60000
 );
 tables[2] = new Table(
-  1,
+  2,
   "Sample 6-handed Table",
   eventEmitter(1),
   6,
@@ -595,7 +595,7 @@ tables[2] = new Table(
   60000
 );
 tables[3] = new Table(
-  2,
+  3,
   "Sample 2-handed Table",
   eventEmitter(2),
   2,
