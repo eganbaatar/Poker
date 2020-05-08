@@ -886,6 +886,16 @@ Table.prototype.endRound = function () {
     }
   }
 
+  let logChips = `${new Date().toISOString()}: `;
+  // log chips in play for current round
+  for (i = 0; i < this.public.seatsCount; i++) {
+    if (this.seats[i] !== null) {
+      const infos = this.seats[i].public;
+      logChips += " " + `${infos.name}: ${infos.chipsInPlay}, `;
+    }
+  }
+  logger.info(logChips);
+
   // If there are not enough players to continue the game, stop it
   if (this.playersSittingInCount < 2) {
     this.stopGame();
