@@ -1,6 +1,6 @@
 var Deck = require("./deck"),
   Pot = require("./pot");
-
+const logger = require("../logger");
 /**
  * The table "class"
  * @param string	id (the table id)
@@ -924,7 +924,7 @@ Table.prototype.log = function (log) {
     ? { ...log, message: `${now}: ${log.message}` }
     : log;
 
-  if (log.message) console.log(`GAMELOG: ${this.public.log.message}`);
+  if (log.message) logger.info(`GAMELOG: ${this.public.log.message}`);
 };
 
 module.exports = Table;
