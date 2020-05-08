@@ -19,6 +19,7 @@
     "jade": "~1.7.0",
     "less": "~2.0.0",
     "less-middleware": "~1.0.4",
+    "lodash": "^4.17.15",
     "socket.io": "~1.2.0",
     "winston": "^3.2.1"
   },

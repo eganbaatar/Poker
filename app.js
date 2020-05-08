@@ -8,6 +8,7 @@ var express = require("express"),
   Player = require("./poker_modules/player");
 var session = require("express-session");
 var sharedsession = require("express-socket.io-session");
+const _ = require("lodash");
 const logger = require("./logger");
 
 app.set("views", path.join(__dirname, "views"));
@@ -156,7 +157,7 @@ io.sockets.on("connection", function (socket) {
   socket.on("leaveTable", function (callback) {
     // If the player was sitting on a table
     if (
-      players[socket.id].sittingOnTable !== false &&
+      isPlayerOnTable(players, socket.id) &&
       tables[players[socket.id].sittingOnTable] !== false
     ) {
       // The seat on which the player was sitting
@@ -280,6 +281,7 @@ io.sockets.on("connection", function (socket) {
    */
   socket.on("sitIn", function (callback) {
     if (
+      players[socket.id] &&
       players[socket.id].sittingOnTable !== false &&
       players[socket.id].seat !== null &&
       !players[socket.id].public.sittingIn
@@ -297,7 +299,7 @@ io.sockets.on("connection", function (socket) {
    * @param function callback
    */
   socket.on("postBlind", function (postedBlind, callback) {
-    if (players[socket.id].sittingOnTable !== false) {
+    if (isPlayerOnTable(players, socket.id)) {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
 
@@ -330,7 +332,7 @@ io.sockets.on("connection", function (socket) {
    * @param function callback
    */
   socket.on("check", function (callback) {
-    if (players[socket.id].sittingOnTable !== "undefined") {
+    if (isPlayerOnTable(players, socket.id)) {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
 
@@ -356,7 +358,7 @@ io.sockets.on("connection", function (socket) {
    * @param function callback
    */
   socket.on("fold", function (callback) {
-    if (players[socket.id].sittingOnTable !== false) {
+    if (isPlayerOnTable(players, socket.id)) {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
 
@@ -379,7 +381,7 @@ io.sockets.on("connection", function (socket) {
    * @param function callback
    */
   socket.on("call", function (callback) {
-    if (players[socket.id].sittingOnTable !== "undefined") {
+    if (isPlayerOnTable(players, socket.id)) {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
 
@@ -404,7 +406,7 @@ io.sockets.on("connection", function (socket) {
    * @param function callback
    */
   socket.on("bet", function (amount, callback) {
-    if (players[socket.id].sittingOnTable !== "undefined") {
+    if (isPlayerOnTable(players, socket.id)) {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
 
@@ -436,7 +438,7 @@ io.sockets.on("connection", function (socket) {
    * @param function callback
    */
   socket.on("raise", function (amount, callback) {
-    if (players[socket.id].sittingOnTable !== "undefined") {
+    if (isPlayerOnTable(players, socket.id)) {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
 
@@ -473,7 +475,7 @@ io.sockets.on("connection", function (socket) {
    * @param function callback
    */
   socket.on("allIn", function (callback) {
-    if (players[socket.id].sittingOnTable !== "undefined") {
+    if (isPlayerOnTable(players, socket.id)) {
       var tableId = players[socket.id].sittingOnTable;
       var activeSeat = tables[tableId].public.activeSeat;
 
@@ -542,6 +544,15 @@ function htmlEntities(str) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function isPlayerOnTable(players, pid) {
+  const playerInfo = players[pid];
+  return (
+    !_.isNil(playerInfo) &&
+    !_.isNil(playerInfo.sittingOnTable) &&
+    playerInfo.sittingOnTable !== false
+  );
 }
 
 tables[0] = new Table(
