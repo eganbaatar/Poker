@@ -1,6 +1,6 @@
 const Deck = require('./deck');
 const Pot = require('./pot');
-const logger = require('../src/logger');
+const logger = require('../logger');
 
 /**
  * The table "class"

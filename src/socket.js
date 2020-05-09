@@ -444,7 +444,7 @@ function htmlEntities(str) {
     .replace(/"/g, '&quot;');
 }
 
-const socketImpl = (io) => {
+const socketCtrl = (io) => {
   io.sockets.on('connection', (socket) => {
     socket.on(event.enterRoom, enterRoom);
     socket.on(event.leaveRoom, leaveRoom);
@@ -476,7 +476,7 @@ const eventEmitter = (tableId) => {
   };
 };
 
-module.export = {
-  socketImpl,
+module.exports = {
+  socketCtrl,
   eventEmitter,
 };
