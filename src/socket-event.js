@@ -17,4 +17,4 @@ const events = {
   sendMessage: 'sendMessage',
 };
 
-module.export = events;
+module.exports = events;

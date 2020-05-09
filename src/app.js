@@ -1,42 +1,41 @@
 const express = require('express');
 const app = express();
+const morgan = require('morgan');
 const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
 const lessMiddleware = require('less-middleware');
 const path = require('path');
 const session = require('express-session');
+const bodyParser = require('body-parser');
 const sharedsession = require('express-socket.io-session');
 const _ = require('lodash');
 const logger = require('./logger');
-const { socketCtrl } = require('./socket');
+const { init } = require('./socket');
 const tables = require('./tables');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-app.use(express.favicon());
-app.use(express.logger('dev'));
-app.use(express.bodyParser());
-app.use(app.router);
 app.use(lessMiddleware(__dirname + '../public'));
 app.use(express.static(path.join(__dirname, '../public')));
-app.set('trust proxy', 1); // trust first proxy
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.set('trust proxy', 1);
+
 var session_ = session({
   secret: 'keyboard cat',
   resave: true,
   saveUninitialized: true,
   cookie: {},
 });
+
 app.use(session_);
 
-// Development Only
-if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
-}
 io.use(
   sharedsession(session_, {
     autoSave: true,
   })
 );
+app.use(morgan('combined'));
 
 var port = process.env.PORT || 3000;
 server.listen(port);
@@ -91,5 +90,5 @@ app.get('/table-data/:tableId', function (req, res) {
   }
 });
 
-// register socket controller
-socketCtrl(io);
+// init socket controller
+init(io);

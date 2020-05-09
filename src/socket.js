@@ -1,4 +1,9 @@
 const event = require('./socket-event');
+const { iNil, get } = require('lodash');
+
+// reference to io instance
+let io;
+let players = {};
 
 const isPlayerOnTable = (players, pid) => {
   const playerInfo = players[pid];
@@ -9,35 +14,23 @@ const isPlayerOnTable = (players, pid) => {
   );
 };
 
-/**
- * When a player enters a room
- * @param object table-data
- */
-const enterRoom = (tableId) => {
-  if (
-    typeof players[socket.id] !== 'undefined' &&
-    players[socket.id].room === null
-  ) {
-    // Add the player to the socket room
-    socket.join('table-' + tableId);
-    // Add the room to the player's data
-    players[socket.id].room = tableId;
+const handleEnterRoom = (tableId, socket) => {
+  const player = getPlayer(socket.id);
+  if (!player || !isNil(player.room)) {
+    return;
   }
+  socket.join(`table-${tableId}`);
+  player.room = tableId;
 };
 
 /**
  * When a player leaves a room
  */
-const leaveRoom = () => {
-  if (
-    typeof players[socket.id] !== 'undefined' &&
-    players[socket.id].room !== null &&
-    players[socket.id].sittingOnTable === false
-  ) {
-    // Remove the player from the socket room
-    socket.leave('table-' + players[socket.id].room);
-    // Remove the room to the player's data
-    players[socket.id].room = null;
+const handleLeaveRoom = (socket) => {
+  const player = getPlayer(socket.id);
+  if (!isNil(get(player, 'room')) && !isPlayerOnTable()) {
+    socket.leave('table-' + player.room);
+    player.room = null;
   }
 };
 
@@ -90,41 +83,37 @@ const leaveTable = (callback) => {
  * @param string newScreenName
  * @param function callback
  */
-const register = (newScreenName, callback) => {
-  // If a new screen name is posted
-  if (socket.handshake.session.player) {
-    console.log(socket.handshake.session.player);
+const handleRegister = (newScreenName, socket, callback) => {
+  if (isNil(newScreenName)) {
+    callback({ success: false, message: '' });
   }
-  if (typeof newScreenName !== 'undefined') {
-    var newScreenName = newScreenName.trim();
-    // If the new screen name is not an empty string
-    if (newScreenName && typeof players[socket.id] === 'undefined') {
-      var nameExists = false;
-      for (var i in players) {
-        if (players[i].public.name && players[i].public.name == newScreenName) {
-          nameExists = true;
-          break;
-        }
-      }
-      if (!nameExists) {
-        // Creating the player object
 
-        players[socket.id] = new Player(socket, newScreenName, 10000);
-        socket.handshake.session.player = 'kardun';
-        socket.handshake.session.save();
-        callback({
-          success: true,
-          screenName: newScreenName,
-          totalChips: players[socket.id].chips,
-        });
-      } else {
-        callback({ success: false, message: 'This name is taken' });
+  var newScreenName = newScreenName.trim();
+  // If the new screen name is not an empty string
+  if (newScreenName && typeof players[socket.id] === 'undefined') {
+    var nameExists = false;
+    for (var i in players) {
+      if (players[i].public.name && players[i].public.name == newScreenName) {
+        nameExists = true;
+        break;
       }
+    }
+    if (!nameExists) {
+      // Creating the player object
+
+      players[socket.id] = new Player(socket, newScreenName, 10000);
+      socket.handshake.session.player = 'kardun';
+      socket.handshake.session.save();
+      callback({
+        success: true,
+        screenName: newScreenName,
+        totalChips: players[socket.id].chips,
+      });
     } else {
-      callback({ success: false, message: 'Please enter a screen name' });
+      callback({ success: false, message: 'This name is taken' });
     }
   } else {
-    callback({ success: false, message: '' });
+    callback({ success: false, message: 'Please enter a screen name' });
   }
 };
 
@@ -444,13 +433,24 @@ function htmlEntities(str) {
     .replace(/"/g, '&quot;');
 }
 
-const socketCtrl = (io) => {
+const init = (_io) => {
+  io = _io;
+  addListeners();
+};
+
+const getPlayer = (id) => {
+  return players[id];
+};
+
+const addListeners = () => {
   io.sockets.on('connection', (socket) => {
-    socket.on(event.enterRoom, enterRoom);
-    socket.on(event.leaveRoom, leaveRoom);
+    socket.on(event.enterRoom, (tableId) => handleEnterRoom(tableId, socket));
+    socket.on(event.leaveRoom, () => handleLeaveRoom(socket));
+    socket.on(event.register, (name, callback) =>
+      handleRegister(name, socket, callback)
+    );
     socket.on(event.disconnect, disconnect);
     socket.on(event.leaveTable, leaveTable);
-    socket.on(event.register, register);
     socket.on(event.sitOnTheTable, sitOnTheTable);
     socket.on(event.sitIn, sitIn);
     socket.on(event.postBlind, postBlind);
@@ -470,13 +470,9 @@ const socketCtrl = (io) => {
  * and update the table data in the ui
  * @param string tableId
  */
-const eventEmitter = (tableId) => {
-  return function (eventName, eventData) {
-    io.sockets.in('table-' + tableId).emit(eventName, eventData);
-  };
+const eventEmitter = (tableId) => (eventName, eventData) => {
+  io.sockets.in('table-' + tableId).emit(eventName, eventData);
 };
 
-module.exports = {
-  socketCtrl,
-  eventEmitter,
-};
+exports.init = init;
+exports.eventEmitter = eventEmitter;
