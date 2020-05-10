@@ -1,5 +1,6 @@
 const event = require('./socket-event');
 const { iNil, get } = require('lodash');
+const tables = require('./tables');
 
 // reference to io instance
 let io;
@@ -37,7 +38,7 @@ const handleLeaveRoom = (socket) => {
 /**
  * When a player disconnects
  */
-const disconnect = () => {
+const handleDisconnect = (socket) => {
   // If the socket points to a player object
   if (typeof players[socket.id] !== 'undefined') {
     // If the player was sitting on a table
@@ -61,7 +62,7 @@ const disconnect = () => {
  * When a player leaves the table
  * @param function callback
  */
-const leaveTable = (callback) => {
+const handleLeaveTable = (callback, socket) => {
   // If the player was sitting on a table
   if (
     isPlayerOnTable(players, socket.id) &&
@@ -121,7 +122,7 @@ const handleRegister = (newScreenName, socket, callback) => {
  * When a player requests to sit on a table
  * @param function callback
  */
-const sitOnTheTable = (data, callback) => {
+const handleSitOnTheTable = (data, callback, socket) => {
   if (
     // A seat has been specified
     typeof data.seat !== 'undefined' &&
@@ -179,7 +180,7 @@ const sitOnTheTable = (data, callback) => {
  * When a player who sits on the table but is not sitting in, requests to sit in
  * @param function callback
  */
-const sitIn = (callback) => {
+const handleSitIn = (callback, socket) => {
   if (
     players[socket.id] &&
     players[socket.id].sittingOnTable !== false &&
@@ -198,7 +199,7 @@ const sitIn = (callback) => {
  * @param bool postedBlind (Shows if the user posted the blind or not)
  * @param function callback
  */
-const postBlind = (postedBlind, callback) => {
+const handlePostBlind = (postedBlind, callback, socket) => {
   if (isPlayerOnTable(players, socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
@@ -231,7 +232,7 @@ const postBlind = (postedBlind, callback) => {
  * When a player checks
  * @param function callback
  */
-const check = (callback) => {
+const handleCheck = (callback, socket) => {
   if (isPlayerOnTable(players, socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
@@ -257,7 +258,7 @@ const check = (callback) => {
  * When a player folds
  * @param function callback
  */
-const fold = (callback) => {
+const handleFold = (callback, socket) => {
   if (isPlayerOnTable(players, socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
@@ -280,7 +281,7 @@ const fold = (callback) => {
  * When a player calls
  * @param function callback
  */
-const call = (callback) => {
+const handleCall = (callback, socket) => {
   if (isPlayerOnTable(players, socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
@@ -305,7 +306,7 @@ const call = (callback) => {
  * @param number amount
  * @param function callback
  */
-const bet = (amount, callback) => {
+const handleBet = (amount, callback, socket) => {
   if (isPlayerOnTable(players, socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
@@ -337,7 +338,7 @@ const bet = (amount, callback) => {
  * When a player raises
  * @param function callback
  */
-const raise = (amount, callback) => {
+const handleRaise = (amount, callback, socket) => {
   if (isPlayerOnTable(players, socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
@@ -374,7 +375,7 @@ const raise = (amount, callback) => {
  * When a player goes all in
  * @param function callback
  */
-const allIn = (callback) => {
+const handleAllIn = (callback, socket) => {
   if (isPlayerOnTable(players, socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
@@ -409,7 +410,7 @@ const allIn = (callback) => {
  * When a message from a player is sent
  * @param string message
  */
-const sendMessage = (message) => {
+const handleSendMessage = (message, socket) => {
   message = message.trim();
   if (message && players[socket.id].room) {
     socket.broadcast
@@ -449,18 +450,30 @@ const addListeners = () => {
     socket.on(event.register, (name, callback) =>
       handleRegister(name, socket, callback)
     );
-    socket.on(event.disconnect, disconnect);
-    socket.on(event.leaveTable, leaveTable);
-    socket.on(event.sitOnTheTable, sitOnTheTable);
-    socket.on(event.sitIn, sitIn);
-    socket.on(event.postBlind, postBlind);
-    socket.on(event.check, check);
-    socket.on(event.fold, fold);
-    socket.on(event.call, call);
-    socket.on(event.bet, bet);
-    socket.on(event.raise, raise);
-    socket.on(event.allIn, allIn);
-    socket.on(event.sendMessage, sendMessage);
+    socket.on(event.sitOnTheTable, (data, callback) =>
+      handleSitOnTheTable(data, callback, socket)
+    );
+    socket.on(event.sitIn, (callback) => handleSitIn(callback, socket));
+    socket.on(event.postBlind, (postBlind, callback) =>
+      handlePostBlind(postBlind, callback, socket)
+    );
+    socket.on(event.check, (callback) => handleCheck(callback, socket));
+    socket.on(event.fold, (callback) => handleFold(callback, socket));
+    socket.on(event.call, (callback) => handleCall(callback, socket));
+    socket.on(event.bet, (amount, callback) =>
+      handleBet(amount, callback, socket)
+    );
+    socket.on(event.raise, (amount, callback) =>
+      handleRaise(amount, callback, socket)
+    );
+    socket.on(event.allIn, (callback) => handleAllIn(callback, socket));
+    socket.on(event.sendMessage, (message) =>
+      handleSendMessage(message, socket)
+    );
+    socket.on(event.disconnect, () => handleDisconnect(socket));
+    socket.on(event.leaveTable, (callback) =>
+      handleLeaveTable(callback, socket)
+    );
   });
 };
 
