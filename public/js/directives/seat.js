@@ -25,7 +25,6 @@ app.directive("seat", [
         scope.cellNumber = parseInt(attributes.cellNumber);
 
         scope.getCardClass = function (seat, card) {
-          console.log(scope.myCards[card]);
           if (scope.mySeat === seat) {
             return scope.myCards[card];
           } else if (
@@ -34,9 +33,9 @@ app.directive("seat", [
             scope.player.cards &&
             scope.player.cards[card]
           ) {
-            return "card-" + scope.player.cards[card];
+            return "card_" + scope.player.cards[card];
           } else {
-            return "card-back";
+            return "card_back";
           }
         };
 

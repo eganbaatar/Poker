@@ -215,9 +215,9 @@ app.controller("TableController", [
         typeof $scope.table.seats[seat].cards !== "undefined" &&
         typeof $scope.table.seats[seat].cards[card] !== "undefined"
       ) {
-        return "card-" + $scope.table.seats[seat].cards[card];
+        return "card_" + $scope.table.seats[seat].cards[card];
       } else {
-        return "card-back";
+        return "card_back";
       }
     };
 
@@ -470,8 +470,8 @@ app.controller("TableController", [
 
     // When the player is dealt cards
     socket.on("dealingCards", function (cards) {
-      $scope.myCards[0] = "card-" + cards[0];
-      $scope.myCards[1] = "card-" + cards[1];
+      $scope.myCards[0] = "card_" + cards[0];
+      $scope.myCards[1] = "card_" + cards[1];
       $scope.$digest();
     });
 
