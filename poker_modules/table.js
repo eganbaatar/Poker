@@ -836,17 +836,23 @@ Table.prototype.playerSatOut = function (seat, playerLeft) {
 
 Table.prototype.otherPlayersAreAllIn = function () {
   // Check if the players are all in
-  var currentPlayer = this.public.activeSeat;
-  var playersAllIn = 0;
-  for (var i = 0; i < this.playersInHandCount; i++) {
-    if (this.seats[currentPlayer].public.chipsInPlay === 0) {
-      playersAllIn++;
-    }
-    currentPlayer = this.findNextPlayer(currentPlayer);
-  }
+  let playersAllIn = 0;
+  try {
+    var currentPlayer = this.public.activeSeat;
 
-  // In this case, all the players are all in. There should be no actions. Move to the next round.
-  return playersAllIn >= this.playersInHandCount - 1;
+    for (var i = 0; i < this.playersInHandCount; i++) {
+      const seat = this.seats[currentPlayer];
+      if (seat && seat.public.chipsInPlay === 0) {
+        playersAllIn++;
+      }
+      currentPlayer = this.findNextPlayer(currentPlayer);
+    }
+
+    // In this case, all the players are all in. There should be no actions. Move to the next round.
+    return playersAllIn >= this.playersInHandCount - 1;
+  } catch (error) {
+    logger.info(error);
+  }
 };
 
 /**
