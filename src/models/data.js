@@ -1,5 +1,8 @@
-const Table = require('./game/table');
-const { eventEmitter } = require('./socket');
+/**
+ * @deprecated
+ */
+const Table = require('../controllers/table');
+const { eventEmitter } = require('../api/socket');
 
 let tables = [];
 

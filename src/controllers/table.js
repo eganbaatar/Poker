@@ -1,6 +1,6 @@
 const Deck = require('./deck');
 const Pot = require('./pot');
-const logger = require('../logger');
+const logger = require('../utils/logger');
 
 /**
  * The table "class"
@@ -687,15 +687,15 @@ Table.prototype.playerRaised = function (amount) {
  * @param int 		seat
  */
 Table.prototype.playerSatOnTheTable = function (player, seat, chips) {
-  this.seats[seat] = player;
-  this.public.seats[seat] = player.public;
+  //  this.seats[seat] = player;
+  //  this.public.seats[seat] = player.public;
 
   this.seats[seat].sitOnTable(this.public.id, seat, chips);
 
   // Increase the counters of the table
-  this.public.playersSeatedCount++;
+  //  this.public.playersSeatedCount++;
 
-  this.playerSatIn(seat);
+  //  this.playerSatIn(seat);
 };
 
 /**
@@ -703,25 +703,24 @@ Table.prototype.playerSatOnTheTable = function (player, seat, chips) {
  * @param int seat
  */
 Table.prototype.playerSatIn = function (seat) {
-  this.log({
+  /*  this.log({
     message: this.seats[seat].public.name + ' sat in',
     action: '',
     seat: '',
     notification: '',
   });
-  this.emitEvent('table-data', this.public);
-
+  */
+  //  this.emitEvent('table-data', this.public);
   // The player is sitting in
-  this.seats[seat].public.sittingIn = true;
-  this.playersSittingInCount++;
-
-  this.emitEvent('table-data', this.public);
-
+  // this.seats[seat].public.sittingIn = true;
+  // this.playersSittingInCount++;
+  //  this.emitEvent('table-data', this.public);
   // If there are no players playing right now, try to initialize a game with the new player
-  if (!this.gameIsOn && this.playersSittingInCount > 1) {
+  /*  if (!this.gameIsOn && this.playersSittingInCount > 1) {
     // Initialize the game
     this.initializeRound(false);
   }
+  */
 };
 
 /**

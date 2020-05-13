@@ -59,15 +59,17 @@ Player.prototype.leaveTable = function () {
  * @param  number   seat
  * @param  number   chips
  */
-Player.prototype.sitOnTable = function (tableId, seat, chips) {
-  // Remove the chips that player will have on the table, from the player object
-  chips = parseInt(chips);
+//Player.prototype.sitOnTable = function (tableId, seat, chips) {
+// Remove the chips that player will have on the table, from the player object
+/*  chips = parseInt(chips);
   this.chips -= chips;
   this.public.chipsInPlay = chips;
   // Add the table info in the player object
   this.seat = seat;
   this.sittingOnTable = tableId;
-};
+  */
+
+//};
 
 /**
  * Updates the player data when they sit out

@@ -1,39 +1,61 @@
 const event = require('./socket-event');
-const { isNil, get } = require('lodash');
-const Player = require('./game/player');
+const { isNil, get, isInteger } = require('lodash');
+const store = require('../models/store');
+const {
+  register,
+  enterRoom,
+  leaveRoom,
+  takeSeat,
+  startGame,
+} = require('../actions');
+const {
+  getPlayerById,
+  getPlayerByName,
+} = require('../selectors/playersSelector');
+const { getTableById } = require('../selectors/tableSelector');
+const { getPublicTableData } = require('./wrapper');
+
+const INITIAL_CHIPS_AMOUNT = 10000;
 
 // reference to io instance
 let io;
 let players = {};
 let tables = [];
 
-const isPlayerOnTable = (players, pid) => {
-  const playerInfo = players[pid];
-  return (
-    !isNil(playerInfo) &&
-    !isNil(playerInfo.sittingOnTable) &&
-    playerInfo.sittingOnTable !== false
-  );
+const playersSlice = (store) => {
+  return store.getState().players;
+};
+const tablesSlice = (store) => {
+  return store.getState().tables;
+};
+
+const isPlayerOnTable = (playerId) => {
+  const player = getPlayerById(store.getState().players)(playerId);
+
+  return get(player, 'seat') > 0;
 };
 
 const handleEnterRoom = (tableId, socket) => {
-  const player = getPlayer(socket.id);
+  const player = getPlayerById(playersSlice(store))(socket.id);
   if (!player || !isNil(player.room)) {
     return;
   }
+
+  store.dispatch(enterRoom({ playerId: socket.id, tableId }));
   socket.join(`table-${tableId}`);
-  player.room = tableId;
 };
 
 /**
  * When a player leaves a room
  */
 const handleLeaveRoom = (socket) => {
-  const player = getPlayer(socket.id);
-  if (!isNil(get(player, 'room')) && !isPlayerOnTable()) {
-    socket.leave('table-' + player.room);
-    player.room = null;
+  const player = getPlayerById(playersSlice(store))(socket.id);
+  // player not sitting on a table
+  if (!player || isNil(player.room) || player.seat > 0) {
+    return;
   }
+  store.dispatch(leaveRoom({ playerId: socket.id }));
+  socket.leave(`table-${player.room}`);
 };
 
 /**
@@ -66,7 +88,7 @@ const handleDisconnect = (socket) => {
 const handleLeaveTable = (callback, socket) => {
   // If the player was sitting on a table
   if (
-    isPlayerOnTable(players, socket.id) &&
+    isPlayerOnTable(socket.id) &&
     tables[players[socket.id].sittingOnTable] !== false
   ) {
     // The seat on which the player was sitting
@@ -82,41 +104,43 @@ const handleLeaveTable = (callback, socket) => {
 
 /**
  * When a new player enters the application
- * @param string newScreenName
+ * @param string screenName
  * @param function callback
  */
-const handleRegister = (newScreenName, socket, callback) => {
-  if (isNil(newScreenName)) {
-    callback({ success: false, message: '' });
+const handleRegister = (_screenName, socket, callback) => {
+  const state = store.getState();
+  const screenName = _screenName.trim();
+
+  if (isNil(screenName)) {
+    return callback({ success: false, message: '' });
   }
 
-  var newScreenName = newScreenName.trim();
-  // If the new screen name is not an empty string
-  if (newScreenName && typeof players[socket.id] === 'undefined') {
-    var nameExists = false;
-    for (var i in players) {
-      if (players[i].public.name && players[i].public.name == newScreenName) {
-        nameExists = true;
-        break;
-      }
-    }
-    if (!nameExists) {
-      // Creating the player object
+  const player = getPlayerById(state, socket.id);
 
-      players[socket.id] = new Player(socket, newScreenName, 10000);
-      socket.handshake.session.player = 'kardun';
-      socket.handshake.session.save();
-      callback({
-        success: true,
-        screenName: newScreenName,
-        totalChips: players[socket.id].chips,
-      });
-    } else {
-      callback({ success: false, message: 'This name is taken' });
-    }
-  } else {
-    callback({ success: false, message: 'Please enter a screen name' });
+  // Player with socket id already exists
+  if (!isNil(player)) {
+    return callback({ success: false, message: 'Please enter a screen name' });
   }
+
+  // If player with same name exists
+  if (getPlayerByName(state, screenName)) {
+    return callback({ success: false, message: 'This name is taken' });
+  }
+
+  // Creating the player object
+  store.dispatch(
+    register({ id: socket.id, name: screenName, chips: INITIAL_CHIPS_AMOUNT })
+  );
+
+  // not sure what these lines do, maybe remove?
+  socket.handshake.session.player = 'kardun';
+  socket.handshake.session.save();
+
+  callback({
+    success: true,
+    screenName: screenName,
+    totalChips: INITIAL_CHIPS_AMOUNT,
+  });
 };
 
 /**
@@ -124,57 +148,60 @@ const handleRegister = (newScreenName, socket, callback) => {
  * @param function callback
  */
 const handleSitOnTheTable = (data, callback, socket) => {
-  if (
-    // A seat has been specified
-    typeof data.seat !== 'undefined' &&
-    // A table id is specified
-    typeof data.tableId !== 'undefined' &&
-    // The table exists
-    typeof tables[data.tableId] !== 'undefined' &&
-    // The seat number is an integer and less than the total number of seats
-    typeof data.seat === 'number' &&
-    data.seat >= 0 &&
-    data.seat < tables[data.tableId].public.seatsCount &&
-    typeof players[socket.id] !== 'undefined' &&
-    // The seat is empty
-    tables[data.tableId].seats[data.seat] == null &&
-    // The player isn't sitting on any other tables
-    players[socket.id].sittingOnTable === false &&
-    // The player had joined the room of the table
-    players[socket.id].room === data.tableId &&
-    // The chips number chosen is a number
-    typeof data.chips !== 'undefined' &&
-    !isNaN(parseInt(data.chips)) &&
-    isFinite(data.chips) &&
-    // The chips number is an integer
-    data.chips % 1 === 0
-  ) {
-    // The chips the player chose are less than the total chips the player has
-    if (data.chips > players[socket.id].chips)
-      callback({ success: false, error: "You don't have that many chips" });
-    else if (
-      data.chips > tables[data.tableId].public.maxBuyIn ||
-      data.chips < tables[data.tableId].public.minBuyIn
-    )
-      callback({
-        success: false,
-        error:
-          'The amount of chips should be between the maximum and the minimum amount of allowed buy in',
-      });
-    else {
-      // Give the response to the user
-      callback({ success: true });
-      // Add the player to the table
-      tables[data.tableId].playerSatOnTheTable(
-        players[socket.id],
-        data.seat,
-        data.chips
-      );
-    }
-  } else {
-    // If the user is not allowed to sit in, notify the user
-    callback({ success: false });
+  const { seat, tableId, chips } = data;
+  if (isNil(seat) || isNil(tableId) || isNil(chips)) {
+    callback({ success: false, error: 'invalid data' });
   }
+
+  const player = getPlayerById(playersSlice(store))(socket.id);
+  const table = getTableById(tablesSlice(store))(tableId);
+
+  /*
+   * Data defined but incorrect
+   *  - table not exist
+   *  - seat number is not integer number
+   *  - invalid seat number
+   *  - seat is not empty
+   *  - player sits already in table
+   *  - player not in the room
+   *  - chip number is not integer
+   */
+  if (
+    !table ||
+    !isInteger(seat) ||
+    seat < 0 ||
+    seat > table.seatsCount ||
+    !isNil(table.seats[seat]) ||
+    player.seat >= 0 ||
+    player.room != tableId ||
+    !isInteger(chips)
+  ) {
+    return callback({ success: false, error: 'invalid data' });
+  }
+
+  if (chips > player.chips) {
+    return callback({ success: false, error: 'Not enough chips' });
+  }
+
+  if (chips > table.maxBuyIn || chips < table.minBuyIn) {
+    return callback({
+      success: false,
+      error:
+        'The amount of chips should be between the maximum and the minimum amount of allowed buy in',
+    });
+  }
+
+  store.dispatch(takeSeat({ playerId: socket.id, tableId, seat, chips }));
+
+  // game will start if more than 1 player sitting and game is not on
+  store.dispatch(startGame({ tableId }));
+
+  socket.broadcast
+    .to(`table-${tableId}`)
+    .emit('table-data', getPublicTableData(tableId));
+
+  // TODO emit table public data
+  callback({ success: true });
 };
 
 /**
@@ -201,7 +228,7 @@ const handleSitIn = (callback, socket) => {
  * @param function callback
  */
 const handlePostBlind = (postedBlind, callback, socket) => {
-  if (isPlayerOnTable(players, socket.id)) {
+  if (isPlayerOnTable(socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
 
@@ -234,7 +261,7 @@ const handlePostBlind = (postedBlind, callback, socket) => {
  * @param function callback
  */
 const handleCheck = (callback, socket) => {
-  if (isPlayerOnTable(players, socket.id)) {
+  if (isPlayerOnTable(socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
 
@@ -260,7 +287,7 @@ const handleCheck = (callback, socket) => {
  * @param function callback
  */
 const handleFold = (callback, socket) => {
-  if (isPlayerOnTable(players, socket.id)) {
+  if (isPlayerOnTable(socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
 
@@ -283,7 +310,7 @@ const handleFold = (callback, socket) => {
  * @param function callback
  */
 const handleCall = (callback, socket) => {
-  if (isPlayerOnTable(players, socket.id)) {
+  if (isPlayerOnTable(socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
 
@@ -308,7 +335,7 @@ const handleCall = (callback, socket) => {
  * @param function callback
  */
 const handleBet = (amount, callback, socket) => {
-  if (isPlayerOnTable(players, socket.id)) {
+  if (isPlayerOnTable(socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
 
@@ -340,7 +367,7 @@ const handleBet = (amount, callback, socket) => {
  * @param function callback
  */
 const handleRaise = (amount, callback, socket) => {
-  if (isPlayerOnTable(players, socket.id)) {
+  if (isPlayerOnTable(socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
 
@@ -377,7 +404,7 @@ const handleRaise = (amount, callback, socket) => {
  * @param function callback
  */
 const handleAllIn = (callback, socket) => {
-  if (isPlayerOnTable(players, socket.id)) {
+  if (isPlayerOnTable(socket.id)) {
     var tableId = players[socket.id].sittingOnTable;
     var activeSeat = tables[tableId].public.activeSeat;
 
@@ -491,3 +518,4 @@ const eventEmitter = (tableId) => (eventName, eventData) => {
 
 exports.init = init;
 exports.eventEmitter = eventEmitter;
+exports.handleSitOnTheTable = handleSitOnTheTable;

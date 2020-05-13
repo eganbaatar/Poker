@@ -9,9 +9,9 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const sharedsession = require('express-socket.io-session');
 const _ = require('lodash');
-const logger = require('./logger');
-const { init } = require('./socket');
-const tables = require('./tables');
+const logger = require('./utils/logger');
+const { init } = require('./api/socket');
+const tables = require('./models/data');
 
 const publicPath = path.resolve(__dirname, '../public');
 console.log(publicPath);
