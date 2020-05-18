@@ -6,7 +6,7 @@ const {
   enterRoom,
   leaveRoom,
   takeSeat,
-  startGame,
+  startRound,
 } = require('../actions');
 const {
   getPlayerById,
@@ -194,13 +194,14 @@ const handleSitOnTheTable = (data, callback, socket) => {
   store.dispatch(takeSeat({ playerId: socket.id, tableId, seat, chips }));
 
   // game will start if more than 1 player sitting and game is not on
-  store.dispatch(startGame({ tableId }));
+  if (!table.gameOn && table.activeSeatsCount > 1) {
+    store.dispatch(startRound({ tableId }));
+  }
 
   socket.broadcast
     .to(`table-${tableId}`)
     .emit('table-data', getPublicTableData(tableId));
 
-  // TODO emit table public data
   callback({ success: true });
 };
 

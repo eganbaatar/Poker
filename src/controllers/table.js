@@ -689,12 +689,9 @@ Table.prototype.playerRaised = function (amount) {
 Table.prototype.playerSatOnTheTable = function (player, seat, chips) {
   //  this.seats[seat] = player;
   //  this.public.seats[seat] = player.public;
-
-  this.seats[seat].sitOnTable(this.public.id, seat, chips);
-
+  // this.seats[seat].sitOnTable(this.public.id, seat, chips);
   // Increase the counters of the table
   //  this.public.playersSeatedCount++;
-
   //  this.playerSatIn(seat);
 };
 

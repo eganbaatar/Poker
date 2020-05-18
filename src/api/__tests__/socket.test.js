@@ -1,6 +1,6 @@
 const store = require('../../models/store');
 const socket = require('../socket');
-const { takeSeat, startGame } = require('../../actions');
+const { takeSeat, startRound } = require('../../actions');
 
 describe('socket', () => {
   let mockCallback;
@@ -25,6 +25,23 @@ describe('socket', () => {
               seatCount: 10,
               maxBuyIn: 1000,
               minBuyIn: 500,
+              gameOn: true,
+            },
+            1: {
+              id: 1,
+              seats: [1],
+              seatCount: 6,
+              activeSeatsCount: 1,
+              maxBuyIn: 1000,
+              minBuyIn: 200,
+            },
+            2: {
+              id: 2,
+              seats: [],
+              seatCount: 6,
+              activeSeatsCount: 0,
+              maxBuyIn: 1000,
+              minBuyIn: 200,
             },
           },
         },
@@ -49,6 +66,11 @@ describe('socket', () => {
               id: 4,
               room: 0,
               chips: 10000,
+            },
+            5: {
+              id: 5,
+              room: 1,
+              chips: 5000,
             },
           },
         },
@@ -271,12 +293,62 @@ describe('socket', () => {
       expect(spyDispatch).toHaveBeenCalledWith(
         takeSeat({ playerId: 4, tableId: 0, chips: 600, seat: 5 })
       );
-      expect(spyDispatch).toHaveBeenCalledWith(startGame({ tableId: 0 }));
+      expect(spyDispatch).not.toHaveBeenCalledWith(startRound({ tableId: 0 }));
       expect(mockCallback).toHaveBeenCalledWith({
         success: true,
       });
       expect(toSpy).toHaveBeenCalledWith('table-0');
       expect(mockEmit).toHaveBeenCalledWith('table-data', undefined);
+    });
+
+    test('start new round if nessessary', () => {
+      const mockEmit = jest.fn((arg) => {});
+      const broadcast = {
+        to: (arg) => {
+          return {
+            emit: mockEmit,
+          };
+        },
+      };
+      const mockSocket = {
+        id: 5,
+        broadcast,
+      };
+      const toSpy = jest.spyOn(broadcast, 'to');
+      socket.handleSitOnTheTable(
+        { seat: 1, tableId: 1, chips: 600 },
+        mockCallback,
+        mockSocket
+      );
+      expect(spyDispatch).toHaveBeenCalledWith(
+        takeSeat({ playerId: 5, tableId: 1, chips: 600, seat: 1 })
+      );
+      expect(spyDispatch).not.toHaveBeenCalledWith(startRound({ tableId: 1 }));
+      expect(mockCallback).toHaveBeenCalledWith({
+        success: true,
+      });
+      expect(toSpy).toHaveBeenCalledWith('table-1');
+      expect(mockEmit).toHaveBeenCalledWith('table-data', undefined);
+    });
+    test('do not start new round if only one player present', () => {
+      const mockEmit = jest.fn((arg) => {});
+      const broadcast = {
+        to: (arg) => {
+          return {
+            emit: mockEmit,
+          };
+        },
+      };
+      const mockSocket = {
+        id: 5,
+        broadcast,
+      };
+      socket.handleSitOnTheTable(
+        { seat: 4, tableId: 2, chips: 600 },
+        mockCallback,
+        mockSocket
+      );
+      expect(spyDispatch).not.toHaveBeenCalledWith(startRound({ tableId: 2 }));
     });
   });
 

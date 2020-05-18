@@ -1,9 +1,9 @@
 const { clone } = require('lodash');
 const { createReducer } = require('@reduxjs/toolkit');
 const { getTableById } = require('../selectors/tableSelector');
-const { takeSeat, startGame } = require('../actions');
+const { takeSeat, startRound } = require('../actions');
 
-const reduceTakeSeat = (state, { playerId, tableId, seat, chips }) => {
+const reduceTakeSeat = (state, { playerId, tableId, seat }) => {
   const table = getTableById(state)(tableId);
   const seats = clone(table.seats);
   seats[seat] = playerId;
