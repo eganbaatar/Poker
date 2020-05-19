@@ -4,16 +4,6 @@ const { getTableById } = require('../selectors/tableSelector');
 const { takeSeat, startRound } = require('../actions');
 const { shuffle } = require('../utils/deck');
 
-const reduceTakeSeat = (state, { playerId, tableId, seat }) => {
-  const table = getTableById(state)(tableId);
-  const seats = clone(table.seats);
-  seats[seat] = playerId;
-  state.byId[tableId].seats = seats;
-  state.byId[tableId].activeSeatsCount =
-    state.byId[tableId].activeSeatsCount + 1;
-  return state;
-};
-
 const getNextActiveSeat = (seats, startingPosition) => {
   const orderedActiveSeats = orderBy(
     seats.filter((seat) => seat.sittingOut != true),
@@ -24,6 +14,16 @@ const getNextActiveSeat = (seats, startingPosition) => {
     (seat) => seat.position > startingPosition
   );
   return next ? next : seats[0];
+};
+
+const reduceTakeSeat = (state, { playerId, tableId, seat }) => {
+  const table = getTableById(state)(tableId);
+  const seats = clone(table.seats);
+  seats[seat] = playerId;
+  state.byId[tableId].seats = seats;
+  state.byId[tableId].activeSeatsCount =
+    state.byId[tableId].activeSeatsCount + 1;
+  return state;
 };
 
 const reduceStartRound = (state, { tableId }) => {

@@ -1,6 +1,6 @@
 const { clone, cloneDeep } = require('lodash');
 const { shuffle } = require('../../utils/deck');
-const { takeSeat, startRound } = require('../../actions');
+const { takeSeat, startRound, postSmallBlind } = require('../../actions');
 const { getTableById } = require('../../selectors/tableSelector');
 const reducer = require('../tableReducer');
 
@@ -80,6 +80,8 @@ describe.only('table reducer', () => {
                 cards: ['Jc', 'Jh'],
                 bet: 30,
               },
+              null,
+              undefined,
             ],
             board: ['4c', '3d', 'Kd', '9c', '2h'],
             deck: shuffle(),
@@ -246,6 +248,77 @@ describe.only('table reducer', () => {
         expect(table.button).toBe(3);
         expect(table.toAct).toBe(0);
         expect(table.phase).toBe('smallBlind');
+      });
+    });
+  });
+
+  describe('postSmallBlind', () => {
+    const seats = [];
+    seats[2] = {
+      position: 2,
+      bet: 0,
+      chipsInPlay: 100,
+      isAllIn: false,
+    };
+    seats[3] = {
+      position: 3,
+      bet: 0,
+      chipsInPlay: 50,
+      isAllIn: false,
+    };
+    const state = {
+      byId: {
+        0: {
+          phase: 'smallBlind',
+          toAct: 3,
+          smallBlind: 5,
+          bigBlind: 10,
+          seats,
+        },
+      },
+    };
+    test('small blind updates current bet and chipsInPlay', () => {
+      const newState = reducer(state, postSmallBlind({ tableId: 0 }));
+      const table = getTableById(newState)(0);
+      expect(table.seats[table.toAct]).toEqual({
+        position: 3,
+        bet: 5,
+        chipsInPlay: 45,
+        isAllIn: false,
+      });
+    });
+    test('change game phase/biggestBet and pass action to next player', () => {
+      const newState = reducer(state, postSmallBlind({ tableId: 0 }));
+      const table = getTableById(newState)(0);
+      expect(table.phase).toEqual('bigBlind');
+      expect(table.toAct).toEqual(2);
+      expect(table.biggestBet).toEqual(5);
+    });
+    test('small blind has not enough chipsInPlay', () => {
+      const state = {
+        byId: {
+          0: {
+            seats: [
+              {
+                position: 0,
+                chipsInPlay: 100,
+                isAllIn: false,
+              },
+              {
+                position: 2,
+                chipsInPlay: 3,
+                isAllIn: false,
+              },
+            ],
+          },
+        },
+      };
+      const newState = reducer(state, postSmallBlind({ tableId: 0 }));
+      const table = getTableById(newState)(0);
+      expect(table.seats[table.toAct]).toEqual({
+        position: 2,
+        chipsInPlay: 0,
+        isAllIn: true,
       });
     });
   });

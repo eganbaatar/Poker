@@ -1,4 +1,3 @@
-const Deck = require('./deck');
 const Pot = require('./pot');
 const logger = require('../utils/logger');
 
