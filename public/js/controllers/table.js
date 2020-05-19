@@ -458,6 +458,7 @@ app.controller("TableController", [
     socket.on("postSmallBlind", function (data) {
       $scope.actionState = "postSmallBlind";
       $scope.setActionReminder();
+      $scope.postBlind(true);
       $scope.$digest();
     });
 
@@ -465,6 +466,7 @@ app.controller("TableController", [
     socket.on("postBigBlind", function (data) {
       $scope.actionState = "postBigBlind";
       $scope.setActionReminder();
+      $scope.postBlind(true);
       $scope.$digest();
     });
 
