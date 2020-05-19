@@ -4,7 +4,7 @@ const {
   getTableById,
   getNextActiveSeat,
 } = require('../selectors/tableSelector');
-const { takeSeat, startRound, postSmallBlind } = require('../actions');
+const { takeSeat, startRound, postBlind } = require('../actions');
 const { shuffle } = require('../utils/deck');
 
 const reduceTakeSeat = (state, { playerId, tableId, seat }) => {
@@ -69,13 +69,14 @@ const reduceStartRound = (state, { tableId }) => {
       : getNextActiveSeat(table.seats, table.button).position;
 };
 
-const reducePostSmallBlind = (state, { tableId }) => {
+const reducePostBlind = (state, { tableId, isSmallBlind = true }) => {
   const table = getTableById(state)(tableId);
   const actingSeat = table.seats[table.toAct];
-  const updatedSeat = updateSeatAfterBet(actingSeat, table.smallBlind);
+  const betAmount = isSmallBlind ? table.smallBlind : table.bigBlind;
+  const updatedSeat = updateSeatAfterBet(actingSeat, betAmount);
   Object.assign(actingSeat, updatedSeat);
 
-  table.phase = 'bigBlind';
+  table.phase = isSmallBlind ? 'bigBlind' : 'preFlop';
   table.biggestBet = updatedSeat.bet;
   table.toAct = getNextActiveSeat(table.seats, table.toAct).position;
 };
@@ -83,8 +84,7 @@ const reducePostSmallBlind = (state, { tableId }) => {
 const tables = createReducer((state = {}), {
   [takeSeat]: (state, action) => reduceTakeSeat(state, action.payload),
   [startRound]: (state, action) => reduceStartRound(state, action.payload),
-  [postSmallBlind]: (state, action) =>
-    reducePostSmallBlind(state, action.payload),
+  [postBlind]: (state, action) => reducePostBlind(state, action.payload),
 });
 
 module.exports = tables;
