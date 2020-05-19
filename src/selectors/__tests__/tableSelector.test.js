@@ -68,8 +68,10 @@ describe('tableSelector', () => {
       ];
       expect(getNextActiveSeat(seats, 2).position).toBe(7);
     });
-    test('return first seat if start index sits on the right', () => {
+    test('return first possible seat if start index sits on the right', () => {
       const seats = [
+        null,
+        null,
         { position: 2, chipsInPlay: 100 },
         { position: 3, chipsInPlay: 200 },
         { position: 4, chipsInPlay: 100 },

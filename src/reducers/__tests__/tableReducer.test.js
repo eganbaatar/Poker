@@ -278,7 +278,7 @@ describe('table reducer', () => {
     test('small blind updates current bet and chipsInPlay', () => {
       const newState = reducer(state, postSmallBlind({ tableId: 0 }));
       const table = getTableById(newState)(0);
-      expect(table.seats[table.toAct]).toEqual({
+      expect(table.seats[3]).toEqual({
         position: 3,
         bet: 5,
         chipsInPlay: 45,
@@ -296,6 +296,7 @@ describe('table reducer', () => {
       const state = {
         byId: {
           0: {
+            toAct: 1,
             seats: [
               {
                 position: 0,
@@ -303,7 +304,7 @@ describe('table reducer', () => {
                 isAllIn: false,
               },
               {
-                position: 2,
+                position: 1,
                 chipsInPlay: 3,
                 isAllIn: false,
               },
@@ -313,8 +314,9 @@ describe('table reducer', () => {
       };
       const newState = reducer(state, postSmallBlind({ tableId: 0 }));
       const table = getTableById(newState)(0);
-      expect(table.seats[table.toAct]).toEqual({
-        position: 2,
+      expect(table.seats[1]).toEqual({
+        position: 1,
+        bet: 3,
         chipsInPlay: 0,
         isAllIn: true,
       });
