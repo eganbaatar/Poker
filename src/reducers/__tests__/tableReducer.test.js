@@ -370,7 +370,7 @@ describe('table reducer', () => {
         isAllIn: false,
       });
     });
-    test('change game phase/biggestBet and pass action to next player', () => {
+    test('updates game info and pass action to next player', () => {
       const newState = reducer(
         state,
         postBlind({ tableId: 0, isSmallBlind: false })
@@ -379,6 +379,7 @@ describe('table reducer', () => {
       expect(table.phase).toEqual('preFlop');
       expect(table.toAct).toEqual(2);
       expect(table.biggestBet).toEqual(10);
+      expect(table.lastPlayerToAct).toEqual(3);
     });
     test('small blind has not enough chipsInPlay', () => {
       const state = {

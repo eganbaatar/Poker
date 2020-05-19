@@ -78,6 +78,7 @@ const reducePostBlind = (state, { tableId, isSmallBlind = true }) => {
 
   table.phase = isSmallBlind ? 'bigBlind' : 'preFlop';
   table.biggestBet = updatedSeat.bet;
+  table.lastPlayerToAct = actingSeat.position;
   table.toAct = getNextActiveSeat(table.seats, table.toAct).position;
 };
 

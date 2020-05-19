@@ -16,6 +16,7 @@ interface Table {
   gameOn: boolean;
   seatCount: number;
   activeSeatsCount: number;
+  lastPlayerToAct: number;
   seats: Seat[];
   smallBlind: number;
   bigBlind: number;
