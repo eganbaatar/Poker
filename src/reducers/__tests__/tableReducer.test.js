@@ -1,6 +1,6 @@
 const { clone, cloneDeep } = require('lodash');
-const { shuffle } = require('../../utils/deck');
-const { takeSeat, startRound, postBlind } = require('../../actions');
+const { shuffle, deal } = require('../../utils/deck');
+const { takeSeat, startRound, postBlind, deal } = require('../../actions');
 const { getTableById } = require('../../selectors/tableSelector');
 const reducer = require('../tableReducer');
 
@@ -413,5 +413,83 @@ describe('table reducer', () => {
         isAllIn: true,
       });
     });
+  });
+
+  describe('deal', () => {
+    test('deal cards to players in preFlop phase', () => {
+      const state = {
+        byId: {
+          0: {
+            board: [],
+            seats: [
+              {
+                position: 0,
+                chipsInPlay: 100,
+              },
+              null,
+              {
+                position: 2,
+                chipsInPlay: 0,
+              },
+              {
+                position: 3,
+                chipsInPlay: 100,
+                sittingOut: true,
+              },
+              {
+                position: 4,
+                chipsInPlay: 150,
+              },
+              {
+                position: 7,
+                chipsInPlay: 150,
+              },
+            ],
+          },
+        },
+      };
+      jest
+        .spyOn(shuffle)
+        .mockReturnValue(['Ah', 'Kd', '10s', 'Js', '7d', '2c', 'Jh', '3c']);
+      const newState = reducer(state, deal());
+      expect(newState).toEqual({
+        byId: {
+          0: {
+            board: [],
+            button: 4,
+            seats: [
+              {
+                position: 0,
+                chipsInPlay: 100,
+                cards: ['10s', 'Js'],
+              },
+              null,
+              {
+                position: 2,
+                chipsInPlay: 0,
+              },
+              {
+                position: 3,
+                chipsInPlay: 100,
+                sittingOut: true,
+              },
+              {
+                position: 4,
+                chipsInPlay: 150,
+                cards: ['7d', '2c'],
+              },
+              {
+                position: 7,
+                chipsInPlay: 150,
+                cards: ['Ah', 'Kd'],
+              },
+            ],
+          },
+        },
+      });
+    });
+    test('deal flop in flop phase', () => {});
+    test('deal turn in turn phase', () => {});
+    test('deal river in river phase', () => {});
   });
 });

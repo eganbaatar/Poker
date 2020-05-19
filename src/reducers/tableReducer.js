@@ -4,7 +4,7 @@ const {
   getTableById,
   getNextActiveSeat,
 } = require('../selectors/tableSelector');
-const { takeSeat, startRound, postBlind } = require('../actions');
+const { takeSeat, startRound, postBlind, deal } = require('../actions');
 const { shuffle } = require('../utils/deck');
 
 const reduceTakeSeat = (state, { playerId, tableId, seat }) => {
@@ -82,10 +82,26 @@ const reducePostBlind = (state, { tableId, isSmallBlind = true }) => {
   table.toAct = getNextActiveSeat(table.seats, table.toAct).position;
 };
 
+const reduceDeal = (state) => {
+  const table = getTableById(state)(tableId);
+  switch (table.phase) {
+    case 'preFlop':
+      const orderedActiveSeats = orderBy(
+        seats.filter(
+          (seat) => seat && seat.chipsInPlay > 0 && seat.sittingOut != true
+        ),
+        ['position'],
+        ['asc']
+      );
+      break;
+  }
+};
+
 const tables = createReducer((state = {}), {
   [takeSeat]: (state, action) => reduceTakeSeat(state, action.payload),
   [startRound]: (state, action) => reduceStartRound(state, action.payload),
   [postBlind]: (state, action) => reducePostBlind(state, action.payload),
+  [deal]: (state, action) => reduceDeal(state, action.payload),
 });
 
 module.exports = tables;
