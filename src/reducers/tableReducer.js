@@ -1,20 +1,11 @@
-const { clone, isNil, orderBy } = require('lodash');
+const { clone, isNil } = require('lodash');
 const { createReducer } = require('@reduxjs/toolkit');
-const { getTableById } = require('../selectors/tableSelector');
-const { takeSeat, startRound } = require('../actions');
+const {
+  getTableById,
+  getNextActiveSeat,
+} = require('../selectors/tableSelector');
+const { takeSeat, startRound, postSmallBlind } = require('../actions');
 const { shuffle } = require('../utils/deck');
-
-const getNextActiveSeat = (seats, startingPosition) => {
-  const orderedActiveSeats = orderBy(
-    seats.filter((seat) => seat.sittingOut != true),
-    ['position'],
-    ['asc']
-  );
-  const next = orderedActiveSeats.find(
-    (seat) => seat.position > startingPosition
-  );
-  return next ? next : seats[0];
-};
 
 const reduceTakeSeat = (state, { playerId, tableId, seat }) => {
   const table = getTableById(state)(tableId);
@@ -69,6 +60,8 @@ const reduceStartRound = (state, { tableId }) => {
 const tables = createReducer((state = {}), {
   [takeSeat]: (state, action) => reduceTakeSeat(state, action.payload),
   [startRound]: (state, action) => reduceStartRound(state, action.payload),
+  [postSmallBlind]: (state, action) =>
+    reducePostSmallBlind(state, action.payload),
 });
 
 module.exports = tables;

@@ -4,7 +4,7 @@ const { takeSeat, startRound, postSmallBlind } = require('../../actions');
 const { getTableById } = require('../../selectors/tableSelector');
 const reducer = require('../tableReducer');
 
-describe.only('table reducer', () => {
+describe('table reducer', () => {
   describe('takeSeat', () => {
     test('assign player to seat and increase activeSeatCount', () => {
       const state = {
@@ -80,8 +80,6 @@ describe.only('table reducer', () => {
                 cards: ['Jc', 'Jh'],
                 bet: 30,
               },
-              null,
-              undefined,
             ],
             board: ['4c', '3d', 'Kd', '9c', '2h'],
             deck: shuffle(),
