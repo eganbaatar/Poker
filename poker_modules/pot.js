@@ -158,19 +158,19 @@ Pot.prototype.destributeToWinners = function (players, firstPlayerToAct) {
     if (winners.length === 1) {
       players[winners[0]].public.chipsInPlay += this.pots[i].amount;
       var htmlHand =
-        "[" + players[winners[0]].evaluatedHand.cards.join(", ") + "]";
+        '[' + players[winners[0]].evaluatedHand.cards.join(', ') + ']';
       htmlHand = htmlHand
-        .replace(/s/g, "&#9824;")
-        .replace(/c/g, "&#9827;")
-        .replace(/h/g, "&#9829;")
-        .replace(/d/g, "&#9830;");
+        .replace(/s/g, '&#9824;')
+        .replace(/c/g, '&#9827;')
+        .replace(/h/g, '&#9829;')
+        .replace(/d/g, '&#9830;');
       messages.push(
         players[winners[0]].public.name +
-          " wins the pot (" +
+          ' wins the pot (' +
           this.pots[i].amount +
-          ") with " +
+          ') with ' +
           players[winners[0]].evaluatedHand.name +
-          " " +
+          ' ' +
           htmlHand
       );
     } else {
@@ -189,19 +189,19 @@ Pot.prototype.destributeToWinners = function (players, firstPlayerToAct) {
 
         players[winners[j]].public.chipsInPlay += playersWinnings;
         var htmlHand =
-          "[" + players[winners[j]].evaluatedHand.cards.join(", ") + "]";
+          '[' + players[winners[j]].evaluatedHand.cards.join(', ') + ']';
         htmlHand = htmlHand
-          .replace(/s/g, "&#9824;")
-          .replace(/c/g, "&#9827;")
-          .replace(/h/g, "&#9829;")
-          .replace(/d/g, "&#9830;");
+          .replace(/s/g, '&#9824;')
+          .replace(/c/g, '&#9827;')
+          .replace(/h/g, '&#9829;')
+          .replace(/d/g, '&#9830;');
         messages.push(
           players[winners[j]].public.name +
-            " ties the pot (" +
+            ' ties the pot (' +
             playersWinnings +
-            ") with " +
+            ') with ' +
             players[winners[j]].evaluatedHand.name +
-            " " +
+            ' ' +
             htmlHand
         );
       }
@@ -228,7 +228,7 @@ Pot.prototype.giveToWinner = function (winner) {
   }
 
   this.reset();
-  return winner.public.name + " wins the pot (" + totalAmount + ")";
+  return winner.public.name + ' wins the pot (' + totalAmount + ')';
 };
 
 /**

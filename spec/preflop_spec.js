@@ -1,5 +1,5 @@
-var Player = require("../poker_modules/player.js");
-var Table = require("../poker_modules/table.js");
+var Player = require('../poker_modules/player.js');
+var Table = require('../poker_modules/table.js');
 
 var eventEmitter = function (tableId) {
   return function (eventName, eventData) {};
@@ -15,7 +15,7 @@ function initializeTestTable() {
 
   table = new Table(
     0,
-    "Sample 10-handed Table",
+    'Sample 10-handed Table',
     eventEmitter(0),
     10,
     2,
@@ -26,7 +26,7 @@ function initializeTestTable() {
   );
 
   for (var i = 0; i < 4; i++) {
-    players[i] = new Player(socket, "Player_" + i, 1000);
+    players[i] = new Player(socket, 'Player_' + i, 1000);
     players[i].socket = socket;
   }
 
@@ -38,14 +38,14 @@ function initializeTestTable() {
   return table;
 }
 
-describe("Posting the small blind", function () {
+describe('Posting the small blind', function () {
   var table;
 
   beforeEach(function () {
     table = initializeTestTable();
   });
 
-  it("should make the next player active", function () {
+  it('should make the next player active', function () {
     if (table.public.activeSeat === 2) {
       table.playerPostedSmallBlind();
       expect(table.public.activeSeat).toEqual(6);
@@ -55,7 +55,7 @@ describe("Posting the small blind", function () {
     }
   });
 
-  it("should not affect the players sitting out", function () {
+  it('should not affect the players sitting out', function () {
     table.playerPostedSmallBlind();
     var currentPlayer = table.public.activeSeat;
     for (var i = 0; i < table.playersSeatedCount; i++) {
@@ -64,8 +64,8 @@ describe("Posting the small blind", function () {
     expect(table.public.activeSeat).toEqual(currentPlayer);
   });
 
-  it("should proceed to the big blind phase", function () {
+  it('should proceed to the big blind phase', function () {
     table.playerPostedSmallBlind();
-    expect(table.public.phase).toEqual("bigBlind");
+    expect(table.public.phase).toEqual('bigBlind');
   });
 });

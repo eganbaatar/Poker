@@ -14,10 +14,14 @@ body {
   font-family: Arial;
   color: @light-purple;
   font-size: 1em;
+  h1 {
+    text-align: center;
+    color: white;
+  }
 }
 
-input[type="text"],
-input[type="number"] {
+input[type='text'],
+input[type='number'] {
   padding: 8px;
   width: 228px;
   border: 1px solid @light-purple;
@@ -37,7 +41,7 @@ input {
 }
 
 button,
-input[type="submit"],
+input[type='submit'],
 .button {
   padding: 16px;
   background-color: rgba(0, 0, 0, 0);
@@ -110,20 +114,29 @@ table {
 
 #table-wrap {
   position: relative;
+  h1 {
+    text-align: center;
+  }
 }
 
 #table-list {
   th {
-    color: #2e1f3e;
+    color: #fff;
     background-color: #9880e9;
     &.dark-border {
       border-right: 1px solid #2e1f3e;
     }
   }
+  td {
+    color: #fff;
+  }
   .centered-text {
     text-align: center;
   }
   margin: 40px 0 0;
+  a {
+    color: darkorange;
+  }
 }
 
 #table {
@@ -199,7 +212,7 @@ div.controls {
   }
 }
 
-input[type="range"] {
+input[type='range'] {
   width: 90%;
   margin-top: 4%;
   padding: 0;
@@ -248,14 +261,14 @@ div#chat {
       }
     }
   }
-  input[type="submit"] {
+  input[type='submit'] {
     font-size: 1.3em;
     padding: 5px 8px;
     margin: 1px 0 0 2px;
     background-color: rgba(46, 31, 62, 0.9);
     border-radius: 8px;
   }
-  input[type="text"] {
+  input[type='text'] {
     width: 197px;
     font-size: 1em;
     margin: 3px 0 0 8px;
@@ -310,7 +323,7 @@ div.seat {
   padding: 10% 0;
   background-color: @purple;
   border: 3px solid @light-purple;
-  border-radius: 5px;
+  border-radius: 30px;
   color: @light-purple;
   font-size: 1.4em;
   font-weight: lighter;
@@ -320,9 +333,16 @@ div.seat {
   -webkit-transition: box-shadow 0.2s ease, border 0.2s ease;
   transition: box-shadow 0.2s ease, border 0.2s ease;
   &.active {
-    color: @lavender;
+    color: white;
     border: 5px solid white;
     box-shadow: 0 0 5px 0 @lavender;
+  }
+  .player-name {
+    font-family: serif;
+  }
+  .player-chips {
+    font-family: monospace;
+    font-weight: bold;
   }
   p {
     text-overflow: ellipsis;
@@ -354,7 +374,7 @@ div#board-wrap {
 }
 
 .card {
-  background-image: url("/images/deck.png");
+  background-image: url('/images/deck.png');
   background-size: 1040px auto;
   border-radius: 8px 8px 0 0;
   height: 100%;
@@ -759,7 +779,7 @@ div#board-wrap {
       .cell-content {
         padding: 4%;
         padding-left: 8%;
-        input[type="range"] {
+        input[type='range'] {
           margin-top: 0;
         }
         #bet-input {
@@ -821,13 +841,13 @@ div#board-wrap {
     height: 76px;
   }
 
-  div#chat input[type="text"] {
+  div#chat input[type='text'] {
     width: 137px;
     font-size: 1.3em;
     padding: 8px;
   }
 
-  div#chat input[type="submit"] {
+  div#chat input[type='submit'] {
     transform: translate(0px, -2px);
     padding: 7px 8px;
   }
@@ -843,4 +863,28 @@ div#board-wrap {
   #developer-info {
     font-size: 1em;
   }
+}
+
+.countdown-wrap {
+  width: 50px !important;
+  text-align: center !important;
+}
+
+.countdown {
+  position: absolute;
+  background: red;
+  width: 30px;
+  height: 30px;
+  font-size: 1.2rem;
+  color: white;
+  font-weight: bold;
+  padding: 2px;
+  border-radius: 16px;
+  line-height: 27px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  display: inline-block;
+  margin-top: 18px;
+  margin-left: -4px;
 }
