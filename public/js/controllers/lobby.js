@@ -1,14 +1,14 @@
-app.controller("LobbyController", [
-  "$scope",
-  "$rootScope",
-  "$http",
+app.controller('LobbyController', [
+  '$scope',
+  '$rootScope',
+  '$http',
   function ($scope, $rootScope, $http) {
     $scope.lobbyTables = [];
-    $scope.newScreenName = "";
+    $scope.newScreenName = '';
 
     $http({
-      url: "/lobby-data",
-      method: "GET",
+      url: '/lobby-data',
+      method: 'GET',
     }).success(function (data, status, headers, config) {
       for (tableId in data) {
         $scope.lobbyTables[tableId] = data[tableId];
@@ -18,11 +18,11 @@ app.controller("LobbyController", [
     $scope.register = function () {
       // If there is some trimmed value for a new screen name
       if ($scope.newScreenName) {
-        socket.emit("register", $scope.newScreenName, function (response) {
+        socket.emit('register', $scope.newScreenName, function (response) {
           if (response.success) {
             $rootScope.screenName = response.screenName;
             $rootScope.totalChips = response.totalChips;
-            $scope.registerError = "";
+            $scope.registerError = '';
             $rootScope.$digest();
           } else if (response.message) {
             $scope.registerError = response.message;

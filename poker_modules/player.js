@@ -135,42 +135,42 @@ Player.prototype.prepareForNewRound = function () {
 Player.prototype.evaluateHand = function (board) {
   var cards = this.cards.concat(board);
   var cardNamess = [
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "T",
-    "J",
-    "Q",
-    "K",
-    "A",
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    'T',
+    'J',
+    'Q',
+    'K',
+    'A',
   ];
   var cardNames = {
-    A: "ace",
-    K: "king",
-    Q: "queen",
-    J: "jack",
-    T: "ten",
-    "9": "nine",
-    "8": "eight",
-    "7": "seven",
-    "6": "six",
-    "5": "five",
-    "4": "four",
-    "3": "three",
-    "2": "deuce",
+    A: 'ace',
+    K: 'king',
+    Q: 'queen',
+    J: 'jack',
+    T: 'ten',
+    '9': 'nine',
+    '8': 'eight',
+    '7': 'seven',
+    '6': 'six',
+    '5': 'five',
+    '4': 'four',
+    '3': 'three',
+    '2': 'deuce',
   };
 
   // Returns the name of the card, in singular or in plural
   var getCardName = function (cardValue, plural) {
-    if (typeof plural !== "undefined" && plural == true) {
-      return cardValue == "6"
-        ? cardNames[cardValue] + "es"
-        : cardNames[cardValue] + "s";
+    if (typeof plural !== 'undefined' && plural == true) {
+      return cardValue == '6'
+        ? cardNames[cardValue] + 'es'
+        : cardNames[cardValue] + 's';
     } else {
       return cardNames[cardValue];
     }
@@ -206,13 +206,13 @@ Player.prototype.evaluateHand = function (board) {
   var straight = [],
     flushes = {},
     pairs = {};
-  (flushes["s"] = []),
-    (flushes["h"] = []),
-    (flushes["d"] = []),
-    (flushes["c"] = []),
+  (flushes['s'] = []),
+    (flushes['h'] = []),
+    (flushes['d'] = []),
+    (flushes['c'] = []),
     (evaluatedHand = {
-      rank: "",
-      name: "",
+      rank: '',
+      name: '',
       rating: 0,
       cards: [],
     });
@@ -241,7 +241,7 @@ Player.prototype.evaluateHand = function (board) {
       straight = [cards[i]];
     } else if (currentCardValue == previousCardValue) {
       // Else if the values are the same, there is a pair that will be pushed to the pairs array
-      if (typeof pairs[cards[i][0]] === "undefined") {
+      if (typeof pairs[cards[i][0]] === 'undefined') {
         pairs[cards[i][0]] = [cards[i - 1], cards[i]];
       } else {
         pairs[cards[i][0]].push(cards[i]);
@@ -252,13 +252,13 @@ Player.prototype.evaluateHand = function (board) {
   // If there are four cards or more for a straight
   if (straight.length >= 4) {
     // If the last card calculated was a deuce and there is an ace in the hand, append it to the end of the straight
-    if (straight[straight.length - 1][0] == "2" && cards[0][0] == "A") {
+    if (straight[straight.length - 1][0] == '2' && cards[0][0] == 'A') {
       straight.push(cards[0]);
     }
 
     // If there is a straight, change the evaluated hand to a straight
     if (straight.length >= 5) {
-      evaluatedHand.rank = "straight";
+      evaluatedHand.rank = 'straight';
       evaluatedHand.cards = straight.slice(0, 5);
     }
   }
@@ -268,7 +268,7 @@ Player.prototype.evaluateHand = function (board) {
     var flushLength = flushes[i].length;
     if (flushLength >= 5) {
       // If there is also a straight, check for a straight flush
-      if (evaluatedHand.rank == "straight") {
+      if (evaluatedHand.rank == 'straight') {
         var straightFlush = [flushes[i][0]];
         var j = 1;
         while (j < flushLength && straightFlush.length < 5) {
@@ -287,26 +287,26 @@ Player.prototype.evaluateHand = function (board) {
         }
         if (
           straightFlush.length == 4 &&
-          straightFlush[3][0] == "2" &&
-          cards.indexOf("A" + i) >= 0
+          straightFlush[3][0] == '2' &&
+          cards.indexOf('A' + i) >= 0
         ) {
-          straightFlush.push("A" + i);
+          straightFlush.push('A' + i);
         }
         if (straightFlush.length == 5) {
           evaluatedHand.cards = straightFlush;
-          if (evaluatedHand.cards[0][0] == "A") {
-            evaluatedHand.rank = "royal flush";
+          if (evaluatedHand.cards[0][0] == 'A') {
+            evaluatedHand.rank = 'royal flush';
           } else {
-            evaluatedHand.rank = "straight flush";
+            evaluatedHand.rank = 'straight flush';
           }
         }
       }
       // If the hand isn't a straight flush, change it to a flush
       if (
-        evaluatedHand.rank != "straight flush" &&
-        evaluatedHand.rank != "royal flush"
+        evaluatedHand.rank != 'straight flush' &&
+        evaluatedHand.rank != 'royal flush'
       ) {
-        evaluatedHand.rank = "flush";
+        evaluatedHand.rank = 'flush';
         evaluatedHand.cards = flushes[i].slice(0, 5);
       }
       break;
@@ -329,7 +329,7 @@ Player.prototype.evaluateHand = function (board) {
         evaluatedHand.cards = pairs[Object.keys(pairs)[0]];
         // If it is a pair
         if (evaluatedHand.cards.length == 2) {
-          evaluatedHand.rank = "pair";
+          evaluatedHand.rank = 'pair';
           while (kickers < 3) {
             if (cards[i][0] != evaluatedHand.cards[0][0]) {
               evaluatedHand.cards.push(cards[i]);
@@ -339,7 +339,7 @@ Player.prototype.evaluateHand = function (board) {
           }
         } else if (evaluatedHand.cards.length == 3) {
           // If it is a three of a kind
-          evaluatedHand.rank = "three of a kind";
+          evaluatedHand.rank = 'three of a kind';
           while (kickers < 2) {
             if (cards[i][0] != evaluatedHand.cards[0][0]) {
               evaluatedHand.cards.push(cards[i]);
@@ -349,7 +349,7 @@ Player.prototype.evaluateHand = function (board) {
           }
         } else if (evaluatedHand.cards.length == 4) {
           // If it is a four of a kind
-          evaluatedHand.rank = "four of a kind";
+          evaluatedHand.rank = 'four of a kind';
           while (kickers < 1) {
             if (cards[i][0] != evaluatedHand.cards[0][0]) {
               evaluatedHand.cards.push(cards[i]);
@@ -382,7 +382,7 @@ Player.prototype.evaluateHand = function (board) {
           for (var j = 0; j < 2; j++) {
             evaluatedHand.cards.push(pairs[Object.keys(pairs)[0]][j]);
           }
-          evaluatedHand.rank = "two pair";
+          evaluatedHand.rank = 'two pair';
           // Add one kicker
           while (kickers < 1) {
             if (
@@ -396,13 +396,13 @@ Player.prototype.evaluateHand = function (board) {
           }
         } else if (evaluatedHand.cards.length == 3) {
           // If the biggest pair has three cards
-          evaluatedHand.rank = "full house";
+          evaluatedHand.rank = 'full house';
           for (var j = 0; j < 2; j++) {
             evaluatedHand.cards.push(pairs[Object.keys(pairs)[0]][j]);
           }
           // If the biggest pair has four cards
         } else {
-          evaluatedHand.rank = "four of a kind";
+          evaluatedHand.rank = 'four of a kind';
           while (kickers < 1) {
             if (cards[i][0] != evaluatedHand.cards[0][0]) {
               evaluatedHand.cards.push(cards[i]);
@@ -421,7 +421,7 @@ Player.prototype.evaluateHand = function (board) {
         // If there is a pair with three cards, it's the biggest pair
         for (var j in pairs) {
           if (pairs[j].length == 3) {
-            evaluatedHand.rank = "full house";
+            evaluatedHand.rank = 'full house';
             evaluatedHand.cards = pairs[j];
             delete pairs[j];
             break;
@@ -429,7 +429,7 @@ Player.prototype.evaluateHand = function (board) {
         }
         // Else, there are three pairs of two cards, so find the biggest one
         if (!evaluatedHand.cards.length) {
-          evaluatedHand.rank = "two pair";
+          evaluatedHand.rank = 'two pair';
           if (
             cardNamess.indexOf(pairKeys[0]) > cardNamess.indexOf(pairKeys[1])
           ) {
@@ -469,7 +469,7 @@ Player.prototype.evaluateHand = function (board) {
         }
 
         // If the biggest pair has two cards, add one kicker
-        if (evaluatedHand.rank == "two pair") {
+        if (evaluatedHand.rank == 'two pair') {
           while (kickers < 1) {
             if (
               cards[i][0] != evaluatedHand.cards[0][0] &&
@@ -486,65 +486,65 @@ Player.prototype.evaluateHand = function (board) {
   }
 
   if (!evaluatedHand.rank) {
-    evaluatedHand.rank = "high card";
+    evaluatedHand.rank = 'high card';
     evaluatedHand.cards = cards.slice(0, 5);
   }
 
   switch (evaluatedHand.rank) {
-    case "high card":
-      evaluatedHand.name = getCardName(evaluatedHand.cards[0][0]) + " high";
+    case 'high card':
+      evaluatedHand.name = getCardName(evaluatedHand.cards[0][0]) + ' high';
       evaluatedHand.rating = rateHand(evaluatedHand.cards);
       break;
-    case "pair":
+    case 'pair':
       evaluatedHand.name =
-        "a pair of " + getCardName(evaluatedHand.cards[0][0], true);
+        'a pair of ' + getCardName(evaluatedHand.cards[0][0], true);
       evaluatedHand.rating = rateHand(evaluatedHand.cards) + 1000000;
       break;
-    case "two pair":
+    case 'two pair':
       evaluatedHand.name =
-        "two pair, " +
+        'two pair, ' +
         getCardName(evaluatedHand.cards[0][0], true) +
-        " and " +
+        ' and ' +
         getCardName(evaluatedHand.cards[2][0], true);
       evaluatedHand.rating = rateHand(evaluatedHand.cards) + 2000000;
       break;
-    case "three of a kind":
+    case 'three of a kind':
       evaluatedHand.name =
-        "three of a kind, " + getCardName(evaluatedHand.cards[0][0], true);
+        'three of a kind, ' + getCardName(evaluatedHand.cards[0][0], true);
       evaluatedHand.rating = rateHand(evaluatedHand.cards) + 3000000;
       break;
-    case "straight":
-      evaluatedHand.name = "a straight to " + getCardName(straight[0][0]);
+    case 'straight':
+      evaluatedHand.name = 'a straight to ' + getCardName(straight[0][0]);
       evaluatedHand.rating = rateHand(evaluatedHand.cards) + 4000000;
       break;
-    case "flush":
+    case 'flush':
       evaluatedHand.name =
-        "a flush, " + getCardName(evaluatedHand.cards[0][0]) + " high";
+        'a flush, ' + getCardName(evaluatedHand.cards[0][0]) + ' high';
       evaluatedHand.rating = rateHand(evaluatedHand.cards) + 5000000;
       break;
-    case "full house":
+    case 'full house':
       evaluatedHand.name =
-        "a full house, " +
+        'a full house, ' +
         getCardName(evaluatedHand.cards[0][0], true) +
-        " full of " +
+        ' full of ' +
         getCardName(evaluatedHand.cards[3][0], true);
       evaluatedHand.rating = rateHand(evaluatedHand.cards) + 6000000;
       break;
-    case "four of a kind":
+    case 'four of a kind':
       evaluatedHand.name =
-        "four of a kind, " + getCardName(evaluatedHand.cards[0][0], true);
+        'four of a kind, ' + getCardName(evaluatedHand.cards[0][0], true);
       evaluatedHand.rating = rateHand(evaluatedHand.cards) + 7000000;
       break;
-    case "straight flush":
+    case 'straight flush':
       evaluatedHand.name =
-        "a straight flush, " +
+        'a straight flush, ' +
         getCardName(evaluatedHand.cards[4][0]) +
-        " to " +
+        ' to ' +
         getCardName(evaluatedHand.cards[0][0]);
       evaluatedHand.rating = rateHand(evaluatedHand.cards) + 8000000;
       break;
-    case "royal flush":
-      evaluatedHand.name = "a royal flush";
+    case 'royal flush':
+      evaluatedHand.name = 'a royal flush';
       evaluatedHand.rating = rateHand(evaluatedHand.cards) + 8000000;
       break;
   }
