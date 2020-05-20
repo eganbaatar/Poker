@@ -3,6 +3,7 @@ const {
   allTablesByArray,
   getTableById,
   getNextActiveSeat,
+  rotateSeatsToPosition,
 } = require('../../selectors/tableSelector');
 
 describe('tableSelector', () => {
@@ -78,5 +79,13 @@ describe('tableSelector', () => {
       ];
       expect(getNextActiveSeat(seats, 4).position).toBe(2);
     });
+  });
+
+  describe('rotateSeatsToPosition', () => {
+    test('do not rotate if position not found', () => {
+      const seats = [{ position: 3 }, { position: 5 }];
+      expect(rotateSeatsToPosition(seats, 8)).toEqual(seats);
+    });
+    test('should start with given position and have correct sequence', () => {});
   });
 });

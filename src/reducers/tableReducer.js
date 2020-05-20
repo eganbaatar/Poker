@@ -93,6 +93,7 @@ const reduceDeal = (state) => {
         ['position'],
         ['asc']
       );
+
       break;
   }
 };

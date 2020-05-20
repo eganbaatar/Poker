@@ -31,7 +31,13 @@ const getNextActiveSeat = (seats, startingPosition) => {
   return isNil(next) ? orderedActiveSeats[0] : next;
 };
 
+/**
+ * @returns shallow copy of seats ordered by position but starts from given position
+ */
+const rotateSeatsToPosition = (seats, position) => {};
+
 exports.allTablesById = allTablesById;
 exports.allTablesByArray = allTablesByArray;
 exports.getTableById = getTableById;
 exports.getNextActiveSeat = getNextActiveSeat;
+exports.rotateSeatsToPosition = rotateSeatsToPosition;
