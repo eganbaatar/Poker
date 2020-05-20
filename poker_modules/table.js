@@ -705,17 +705,10 @@ Table.prototype.playerSatIn = function (seat) {
   const message = `JOIN: ${this.seats[seat].public.name} sat in, chips: ${this.seats[seat].public.chipsInPlay}`;
 
   this.log({
-<<<<<<< HEAD
     message,
-    action: "",
-    seat: "",
-    notification: "",
-=======
-    message: this.seats[seat].public.name + ' sat in',
     action: '',
     seat: '',
     notification: '',
->>>>>>> origin/release
   });
   this.emitEvent('table-data', this.public);
 
