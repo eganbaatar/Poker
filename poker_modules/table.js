@@ -702,8 +702,10 @@ Table.prototype.playerSatOnTheTable = function (player, seat, chips) {
  * @param int seat
  */
 Table.prototype.playerSatIn = function (seat) {
+  const message = `JOIN: ${this.seats[seat].public.name} sat in, chips: ${this.seats[seat].public.chipsInPlay}`;
+
   this.log({
-    message: this.seats[seat].public.name + ' sat in',
+    message,
     action: '',
     seat: '',
     notification: '',
@@ -728,7 +730,7 @@ Table.prototype.playerSatIn = function (seat) {
  * @param int seat
  */
 Table.prototype.playerLeft = function (seat) {
-  const message = `${this.seats[seat].public.name} left,  chips: ${this.seats[seat].public.chipsInPlay}`;
+  const message = `LEFT: ${this.seats[seat].public.name} left,  chips: ${this.seats[seat].public.chipsInPlay}`;
   this.log({
     message,
     action: '',
