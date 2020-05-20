@@ -572,8 +572,8 @@ tables[0] = new Table(
   10000,
   40,
   false,
-  15000,
-  30000
+  10000,
+  20000
 );
 tables[1] = new Table(
   1,
@@ -585,8 +585,8 @@ tables[1] = new Table(
   100000,
   5000,
   false,
-  15000,
-  30000
+  10000,
+  20000
 );
 tables[2] = new Table(
   2,
@@ -598,8 +598,8 @@ tables[2] = new Table(
   100000,
   5000,
   false,
-  15000,
-  30000
+  10000,
+  20000
 );
 tables[3] = new Table(
   3,
@@ -611,6 +611,6 @@ tables[3] = new Table(
   800,
   160,
   false,
-  15000,
-  30000
+  10000,
+  20000
 );
