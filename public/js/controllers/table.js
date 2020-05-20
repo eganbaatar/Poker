@@ -124,9 +124,9 @@ app.controller("TableController", [
 
     $scope.showCountdown = function () {
       return (
-          $scope.actionState === "actNotBettedPot" ||
-          $scope.actionState === "actBettedPot" ||
-          $scope.actionState === "actOthersAllIn"
+        $scope.actionState === "actNotBettedPot" ||
+        $scope.actionState === "actBettedPot" ||
+        $scope.actionState === "actOthersAllIn"
       );
     };
 
@@ -391,10 +391,7 @@ app.controller("TableController", [
           $scope.actionTimer = null;
         }
         $scope.countDown = $scope.table.maxActionTimeout / 1000;
-        $scope.countDownTimer = setInterval(
-          $scope.intervalAction,
-          1000
-        );
+        $scope.countDownTimer = setInterval($scope.intervalAction, 1000);
 
         $scope.actionTimeout = $scope.table.minActionTimeout;
         $scope.actionTimer = setTimeout(
