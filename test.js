@@ -1,5 +1,5 @@
-var Deck = require("./poker_modules/deck");
-var fs = require("fs");
+var Deck = require('./poker_modules/deck');
+var fs = require('fs');
 
 var deck = new Deck();
 
@@ -12,7 +12,7 @@ for (var i = 0; i < 10000; i++) {
   samples.push(cards);
 }
 
-fs.writeFileSync("samples.json", JSON.stringify(samples));
+fs.writeFileSync('samples.json', JSON.stringify(samples));
 
 // samples.forEach(function (card) {
 //   console.log(card);

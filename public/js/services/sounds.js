@@ -2,14 +2,14 @@
  * Returns functions that play the sounds of the application
  * @return object
  */
-app.factory("sounds", [
+app.factory('sounds', [
   function () {
-    var foldSound = document.getElementById("fold-sound"),
-      checkSound = document.getElementById("check-sound"),
-      callSound = document.getElementById("call-sound"),
-      betSound = document.getElementById("bet-sound"),
-      raiseSound = document.getElementById("raise-sound");
-    actionReminderSound = document.getElementById("actionReminder-sound");
+    var foldSound = document.getElementById('fold-sound'),
+      checkSound = document.getElementById('check-sound'),
+      callSound = document.getElementById('call-sound'),
+      betSound = document.getElementById('bet-sound'),
+      raiseSound = document.getElementById('raise-sound');
+    actionReminderSound = document.getElementById('actionReminder-sound');
 
     return {
       playFoldSound: function () {

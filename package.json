@@ -4,7 +4,7 @@
   "private": false,
   "scripts": {
     "start": "node app.js",
-    "format": "prettier --write **/*.{js,less,json,html}",
+    "format": "prettier --write .",
     "format:check": "prettier --check **/*.{js,less,json,html}"
   },
   "repository": {

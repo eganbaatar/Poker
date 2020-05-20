@@ -3,22 +3,22 @@
  * seatIndex: The index of the player in the "seats" array
  * cellNumber: The number of the cell in the grid (used for styles)
  */
-app.directive("seat", [
+app.directive('seat', [
   function () {
     return {
-      restrict: "E",
-      templateUrl: "/partials/seat.html",
+      restrict: 'E',
+      templateUrl: '/partials/seat.html',
       replace: true,
       scope: {
-        player: "=",
-        mySeat: "=",
-        myCards: "=",
-        activeSeat: "=",
-        selectedSeat: "=",
-        sittingOnTable: "=",
-        dealerSeat: "=",
-        notifications: "=",
-        showBuyInModal: "&",
+        player: '=',
+        mySeat: '=',
+        myCards: '=',
+        activeSeat: '=',
+        selectedSeat: '=',
+        sittingOnTable: '=',
+        dealerSeat: '=',
+        notifications: '=',
+        showBuyInModal: '&',
       },
       link: function (scope, element, attributes) {
         scope.seatIndex = parseInt(attributes.seatIndex);
@@ -28,21 +28,21 @@ app.directive("seat", [
           if (scope.mySeat === seat) {
             return scope.myCards[card];
           } else if (
-            typeof scope.player !== "undefined" &&
+            typeof scope.player !== 'undefined' &&
             scope.player &&
             scope.player.cards &&
             scope.player.cards[card]
           ) {
-            return "card_" + scope.player.cards[card];
+            return 'card_' + scope.player.cards[card];
           } else {
-            return "card_back";
+            return 'card_back';
           }
         };
 
         scope.seatOccupied = function (seat) {
           return (
             !scope.sittingOnTable ||
-            (typeof scope.player !== "undefinde" &&
+            (typeof scope.player !== 'undefinde' &&
               scope.player &&
               scope.player.name)
           );
