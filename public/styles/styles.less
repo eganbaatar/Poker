@@ -14,6 +14,10 @@ body {
   font-family: Arial;
   color: @light-purple;
   font-size: 1em;
+  h1 {
+    text-align: center;
+    color: white;
+  }
 }
 
 input[type="text"],
@@ -110,20 +114,29 @@ table {
 
 #table-wrap {
   position: relative;
+  h1 {
+    text-align: center;
+  }
 }
 
 #table-list {
   th {
-    color: #2e1f3e;
+    color: #FFF;
     background-color: #9880e9;
     &.dark-border {
       border-right: 1px solid #2e1f3e;
     }
   }
+  td {
+    color: #FFF;
+  }
   .centered-text {
     text-align: center;
   }
   margin: 40px 0 0;
+  a {
+    color: darkorange;
+  }
 }
 
 #table {
@@ -310,7 +323,7 @@ div.seat {
   padding: 10% 0;
   background-color: @purple;
   border: 3px solid @light-purple;
-  border-radius: 5px;
+  border-radius: 30px;;
   color: @light-purple;
   font-size: 1.4em;
   font-weight: lighter;
@@ -320,9 +333,16 @@ div.seat {
   -webkit-transition: box-shadow 0.2s ease, border 0.2s ease;
   transition: box-shadow 0.2s ease, border 0.2s ease;
   &.active {
-    color: @lavender;
+    color: white;
     border: 5px solid white;
     box-shadow: 0 0 5px 0 @lavender;
+  }
+  .player-name {
+    font-family: serif;
+  }
+  .player-chips {
+    font-family: monospace;
+    font-weight: bold;
   }
   p {
     text-overflow: ellipsis;
@@ -843,4 +863,28 @@ div#board-wrap {
   #developer-info {
     font-size: 1em;
   }
+}
+
+.countdown-wrap {
+  width: 50px !important;
+  text-align: center !important;
+}
+
+.countdown {
+  position: absolute;
+  background: red;
+  width: 30px;
+  height: 30px;
+  font-size: 1.2rem;
+  color: white;
+  font-weight: bold;
+  padding: 2px;
+  border-radius: 16px;
+  line-height: 27px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  display: inline-block;
+  margin-top: 18px;
+  margin-left: -4px;
 }

@@ -573,7 +573,7 @@ tables[0] = new Table(
   40,
   false,
   15000,
-  60000
+  30000
 );
 tables[1] = new Table(
   1,
@@ -586,7 +586,7 @@ tables[1] = new Table(
   5000,
   false,
   15000,
-  60000
+  30000
 );
 tables[2] = new Table(
   2,
@@ -599,7 +599,7 @@ tables[2] = new Table(
   5000,
   false,
   15000,
-  60000
+  30000
 );
 tables[3] = new Table(
   3,
@@ -612,5 +612,5 @@ tables[3] = new Table(
   160,
   false,
   15000,
-  60000
+  30000
 );

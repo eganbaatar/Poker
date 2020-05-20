@@ -21,6 +21,7 @@ app.controller("TableController", [
     $scope.betAmount = 0;
     $scope.actionTimeout = 0;
     $scope.actionTimer = null;
+    $scope.countDownTimer = null;
     $rootScope.sittingOnTable = null;
     var showingNotification = false;
 
@@ -118,6 +119,14 @@ app.controller("TableController", [
         $scope.actionState === "actNotBettedPot" ||
         $scope.actionState === "actBettedPot" ||
         $scope.actionState === "actOthersAllIn"
+      );
+    };
+
+    $scope.showCountdown = function () {
+      return (
+          $scope.actionState === "actNotBettedPot" ||
+          $scope.actionState === "actBettedPot" ||
+          $scope.actionState === "actOthersAllIn"
       );
     };
 
@@ -359,7 +368,7 @@ app.controller("TableController", [
     };
 
     $scope.allIn = function () {
-      if (window.confirm("Andaa neeree you?!")) {
+      if (window.confirm("Andaa neeree yu?!")) {
         socket.emit("allIn", function (response) {
           if (response.success) {
             sounds.playRaiseSound();
@@ -373,11 +382,34 @@ app.controller("TableController", [
 
     $scope.setActionReminder = function () {
       if ($scope.table.minActionTimeout) {
+        if ($scope.countDownTimer !== null) {
+          clearInterval($scope.countDownTimer);
+        }
+        if ($scope.actionTimer !== null) {
+          clearTimeout($scope.actionTimer);
+          $scope.actionTimeout = 0;
+          $scope.actionTimer = null;
+        }
+        $scope.countDown = $scope.table.maxActionTimeout / 1000;
+        $scope.countDownTimer = setInterval(
+          $scope.intervalAction,
+          1000
+        );
+
         $scope.actionTimeout = $scope.table.minActionTimeout;
         $scope.actionTimer = setTimeout(
           $scope.remindAction,
           $scope.actionTimeout
         );
+      }
+    };
+
+    $scope.intervalAction = function () {
+      if ($scope.countDown > 0) {
+        $scope.countDown--;
+        $scope.$apply();
+      } else {
+        $scope.fold();
       }
     };
 
@@ -387,18 +419,15 @@ app.controller("TableController", [
         $scope.actionTimeout = 0;
         $scope.actionTimer = null;
       }
+      if ($scope.countDownTimer !== null) {
+        clearInterval($scope.countDownTimer);
+        $scope.countDown = 20;
+        $scope.countDownTimer = null;
+      }
     };
 
     $scope.remindAction = function () {
       sounds.playActionReminderSound();
-      $scope.actionTimeout *= 2;
-      if ($scope.actionTimeout > $scope.table.maxActionTimeout) {
-        $scope.actionTimeout = $scope.table.maxActionTimeout;
-      }
-      $scope.actionTimer = setTimeout(
-        $scope.remindAction,
-        $scope.actionTimeout
-      );
     };
 
     // When the table data have changed
@@ -457,7 +486,6 @@ app.controller("TableController", [
     // When the player is asked to place the small blind
     socket.on("postSmallBlind", function (data) {
       $scope.actionState = "postSmallBlind";
-      $scope.setActionReminder();
       $scope.postBlind(true);
       $scope.$digest();
     });
@@ -465,7 +493,6 @@ app.controller("TableController", [
     // When the player is asked to place the big blind
     socket.on("postBigBlind", function (data) {
       $scope.actionState = "postBigBlind";
-      $scope.setActionReminder();
       $scope.postBlind(true);
       $scope.$digest();
     });
