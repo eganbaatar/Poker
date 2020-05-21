@@ -516,7 +516,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('sendMessage', function (message) {
       message = message.trim();
       const player = players[socket.id];
-      if (message && player.room) {
+      if (message && player && player.room) {
         socket.broadcast
           .to('table-' + players[socket.id].room)
           .emit('receiveMessage', {
