@@ -1,5 +1,8 @@
 <div class="player-wrap">
-  <div class="player-cards" ng-class="{dealt: player.hasCards}">
+  <div
+    class="player-cards"
+    ng-class="{dealt: showDealtCards(seatIndex), folded: hasFolded(seatIndex)}"
+  >
     <div
       class="card"
       ng-show="seatOccupied(seatIndex)"

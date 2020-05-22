@@ -7,6 +7,7 @@
 @dark-greek: #17541d;
 @brown: #724f39;
 @white: #ffffff;
+@fold-opacity: 50%;
 
 body {
   margin: 0;
@@ -309,6 +310,9 @@ div.player-wrap {
     transition: top 0.4s ease;
     &.dealt {
       top: -60px;
+    }
+    &.folded {
+      opacity: @fold-opacity;
     }
     .card:first-child {
       left: 0;
@@ -747,6 +751,9 @@ div#board-wrap {
       &.dealt {
         top: -25px;
       }
+      &.folded {
+        opacity: @fold-opacity;
+      }
     }
   }
 
@@ -819,6 +826,9 @@ div#board-wrap {
       height: 50px;
       &.dealt {
         top: -50px;
+      }
+      &.folded {
+        opacity: @fold-opacity;
       }
     }
   }
