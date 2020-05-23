@@ -15,5 +15,7 @@ npm-debug.log
 node_modules
 .project
 .vscode
+.DS_Store
+.idea
 
 public/styles/styles.css
