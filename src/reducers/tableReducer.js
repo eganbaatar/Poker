@@ -1,11 +1,12 @@
-const { clone, isNil } = require('lodash');
+const { clone, isNil, times } = require('lodash');
 const { createReducer } = require('@reduxjs/toolkit');
 const {
   getTableById,
   getNextActiveSeat,
+  rotateSeatsToPosition,
 } = require('../selectors/tableSelector');
 const { takeSeat, startRound, postBlind, deal } = require('../actions');
-const { shuffle } = require('../utils/deck');
+const deck = require('../utils/deck');
 
 const reduceTakeSeat = (state, { playerId, tableId, seat }) => {
   const table = getTableById(state)(tableId);
@@ -34,7 +35,7 @@ const reduceStartRound = (state, { tableId }) => {
     gameOn: true,
     board: [],
     phase: 'smallBlind',
-    deck: shuffle(),
+    deck: deck.shuffle(),
   };
   const defaultSeatInfo = {
     isAllIn: false,
@@ -82,18 +83,35 @@ const reducePostBlind = (state, { tableId, isSmallBlind = true }) => {
   table.toAct = getNextActiveSeat(table.seats, table.toAct).position;
 };
 
-const reduceDeal = (state) => {
+const reduceDeal = (state, { tableId }) => {
   const table = getTableById(state)(tableId);
   switch (table.phase) {
     case 'preFlop':
-      const orderedActiveSeats = orderBy(
-        seats.filter(
+      // set shuffled deck into table
+      table.deck = deck.shuffle();
+      table.dealt = [];
+
+      const nextSeatToButton = getNextActiveSeat(table.seats, table.button);
+
+      // deal cards to seats beginning with position after button
+      const orderedActiveSeats = rotateSeatsToPosition(
+        table.seats.filter(
           (seat) => seat && seat.chipsInPlay > 0 && seat.sittingOut != true
         ),
-        ['position'],
-        ['asc']
+        nextSeatToButton.position
       );
 
+      times(2, (iteration) => {
+        orderedActiveSeats.forEach((seat) => {
+          if (iteration === 0) {
+            seat.cards = [];
+          }
+          const { dealt, remaining } = deck.deal(table.deck, 1);
+          seat.cards = seat.cards.concat(dealt);
+          table.dealt = table.dealt.concat(dealt);
+          table.deck = remaining;
+        });
+      });
       break;
   }
 };

@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node ./src/index.js",
     "test": "jest --runInBand",
+    "test:w": "jest --runInBand --watch --silent false",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

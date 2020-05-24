@@ -1,6 +1,11 @@
 const { clone, cloneDeep } = require('lodash');
-const { shuffle, deal } = require('../../utils/deck');
-const { takeSeat, startRound, postBlind, deal } = require('../../actions');
+const deck = require('../../utils/deck');
+const {
+  takeSeat,
+  startRound,
+  postBlind,
+  deal: dealAction,
+} = require('../../actions');
 const { getTableById } = require('../../selectors/tableSelector');
 const reducer = require('../tableReducer');
 
@@ -82,7 +87,7 @@ describe('table reducer', () => {
               },
             ],
             board: ['4c', '3d', 'Kd', '9c', '2h'],
-            deck: shuffle(),
+            deck: deck.shuffle(),
           },
         },
       };
@@ -416,11 +421,14 @@ describe('table reducer', () => {
   });
 
   describe('deal', () => {
+    const currentDeck = ['Ah', 'Kd', '10s', 'Js', '7d', '2c', 'Jh', '3c'];
     test('deal cards to players in preFlop phase', () => {
       const state = {
         byId: {
           0: {
             board: [],
+            button: 4,
+            phase: 'preFlop',
             seats: [
               {
                 position: 0,
@@ -448,20 +456,21 @@ describe('table reducer', () => {
           },
         },
       };
-      jest
-        .spyOn(shuffle)
-        .mockReturnValue(['Ah', 'Kd', '10s', 'Js', '7d', '2c', 'Jh', '3c']);
-      const newState = reducer(state, deal());
+      jest.spyOn(deck, 'shuffle').mockReturnValue(currentDeck);
+      const newState = reducer(state, dealAction({ tableId: 0 }));
       expect(newState).toEqual({
         byId: {
           0: {
             board: [],
             button: 4,
+            phase: 'preFlop',
+            deck: ['Jh', '3c'],
+            dealt: ['Ah', 'Kd', '10s', 'Js', '7d', '2c'],
             seats: [
               {
                 position: 0,
                 chipsInPlay: 100,
-                cards: ['10s', 'Js'],
+                cards: ['Kd', '7d'],
               },
               null,
               {
@@ -476,12 +485,12 @@ describe('table reducer', () => {
               {
                 position: 4,
                 chipsInPlay: 150,
-                cards: ['7d', '2c'],
+                cards: ['10s', '2c'],
               },
               {
                 position: 7,
                 chipsInPlay: 150,
-                cards: ['Ah', 'Kd'],
+                cards: ['Ah', 'Js'],
               },
             ],
           },

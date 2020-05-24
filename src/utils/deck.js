@@ -94,7 +94,7 @@ const deal = (deck, numberOfCards) => {
   }
   return {
     dealt: take(deck, numberOfCards),
-    remain: drop(deck, numberOfCards),
+    remaining: drop(deck, numberOfCards),
   };
 };
 
