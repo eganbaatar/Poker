@@ -1,5 +1,5 @@
 const { createSelector } = require('reselect');
-const { memoize, orderBy, isNil } = require('lodash');
+const { memoize, orderBy, isNil, find } = require('lodash');
 
 const allTablesById = (state) => state.byId;
 
@@ -34,7 +34,23 @@ const getNextActiveSeat = (seats, startingPosition) => {
 /**
  * @returns shallow copy of seats ordered by position but starts from given position
  */
-const rotateSeatsToPosition = (seats, position) => {};
+const rotateSeatsToPosition = (seats, position) => {
+  if (isNil(find(seats, { position }))) {
+    return seats;
+  }
+  const seatsAfter = orderBy(
+    seats.filter((seat) => seat.position >= position),
+    ['position'],
+    ['asc']
+  );
+
+  const seatsBefore = orderBy(
+    seats.filter((seat) => seat.position < position),
+    ['position'],
+    ['asc']
+  );
+  return seatsAfter.concat(seatsBefore);
+};
 
 exports.allTablesById = allTablesById;
 exports.allTablesByArray = allTablesByArray;

@@ -86,6 +86,22 @@ describe('tableSelector', () => {
       const seats = [{ position: 3 }, { position: 5 }];
       expect(rotateSeatsToPosition(seats, 8)).toEqual(seats);
     });
-    test('should start with given position and have correct sequence', () => {});
+    test('should start with given position and have correct sequence', () => {
+      const seats = [
+        { position: 7 },
+        { position: 8 },
+        { position: 0 },
+        { position: 3 },
+        { position: 5 },
+      ];
+      const expected = [
+        { position: 3 },
+        { position: 5 },
+        { position: 7 },
+        { position: 8 },
+        { position: 0 },
+      ];
+      expect(rotateSeatsToPosition(seats, 3)).toEqual(expected);
+    });
   });
 });
