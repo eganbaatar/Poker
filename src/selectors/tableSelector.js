@@ -9,26 +9,67 @@ const getTableById = createSelector(allTablesById, (tableMap) =>
   memoize((id) => tableMap[id])
 );
 
+const findSeat = (seats, position, orderDirection, filterFn) => {
+  const orderedActiveSeats = orderBy(
+    seats.filter(filterFn),
+    ['position'],
+    [orderDirection]
+  );
+  const next = orderedActiveSeats.find((seat) => {
+    return orderDirection === 'asc'
+      ? seat.position > position
+      : seat.position < position;
+  });
+  return isNil(next) ? orderedActiveSeats[0] : next;
+};
+
 /**
  * search next seat (in the left side) which is
  *   - not sitting out
  *   - has chips
  *
  * @param {object[]} seats
- * @param {number} startingPosition
+ * @param {number} position
  */
-const getNextActiveSeat = (seats, startingPosition) => {
-  const orderedActiveSeats = orderBy(
-    seats.filter(
-      (seat) => seat && seat.chipsInPlay > 0 && seat.sittingOut != true
-    ),
-    ['position'],
-    ['asc']
+const getNextActiveSeat = (seats, position) => {
+  return findSeat(
+    seats,
+    position,
+    'asc',
+    (seat) => seat && seat.chipsInPlay > 0 && seat.sittingOut != true
   );
-  const next = orderedActiveSeats.find(
-    (seat) => seat.position > startingPosition
+};
+const getPreviousActiveSeat = (seats, position) => {
+  return findSeat(
+    seats,
+    position,
+    'desc',
+    (seat) => seat && seat.chipsInPlay > 0 && seat.sittingOut != true
   );
-  return isNil(next) ? orderedActiveSeats[0] : next;
+};
+const getNextActiveSeatInHand = (seats, position) => {
+  return findSeat(
+    seats,
+    position,
+    'asc',
+    (seat) =>
+      seat &&
+      seat.chipsInPlay > 0 &&
+      seat.sittingOut != true &&
+      seat.inHand === true
+  );
+};
+const getPreviousActiveSeatInHand = (seats, position) => {
+  return findSeat(
+    seats,
+    position,
+    'desc',
+    (seat) =>
+      seat &&
+      seat.chipsInPlay > 0 &&
+      seat.sittingOut != true &&
+      seat.inHand === true
+  );
 };
 
 /**
@@ -56,4 +97,7 @@ exports.allTablesById = allTablesById;
 exports.allTablesByArray = allTablesByArray;
 exports.getTableById = getTableById;
 exports.getNextActiveSeat = getNextActiveSeat;
+exports.getPreviousActiveSeat = getPreviousActiveSeat;
+exports.getNextActiveSeatInHand = getNextActiveSeatInHand;
+exports.getPreviousActiveSeatInHand = getPreviousActiveSeatInHand;
 exports.rotateSeatsToPosition = rotateSeatsToPosition;
