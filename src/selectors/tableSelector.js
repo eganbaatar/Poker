@@ -1,5 +1,5 @@
 const { createSelector } = require('reselect');
-const { memoize, orderBy, isNil, find } = require('lodash');
+const { memoize, get, orderBy, isNil, find, maxBy } = require('lodash');
 
 const allTablesById = (state) => state.byId;
 
@@ -93,6 +93,10 @@ const rotateSeatsToPosition = (seats, position) => {
   return seatsAfter.concat(seatsBefore);
 };
 
+const getBiggestBet = (table) => {
+  return get(maxBy(table.seats, 'bet'), 'bet', 0);
+};
+
 exports.allTablesById = allTablesById;
 exports.allTablesByArray = allTablesByArray;
 exports.getTableById = getTableById;
@@ -101,3 +105,4 @@ exports.getPreviousActiveSeat = getPreviousActiveSeat;
 exports.getNextActiveSeatInHand = getNextActiveSeatInHand;
 exports.getPreviousActiveSeatInHand = getPreviousActiveSeatInHand;
 exports.rotateSeatsToPosition = rotateSeatsToPosition;
+exports.getBiggestBet = getBiggestBet;

@@ -7,6 +7,7 @@ const {
   getNextActiveSeatInHand,
   getPreviousActiveSeatInHand,
   rotateSeatsToPosition,
+  getBiggestBet,
 } = require('../../selectors/tableSelector');
 
 describe('tableSelector', () => {
@@ -220,6 +221,27 @@ describe('tableSelector', () => {
         { position: 4, chipsInPlay: 100, inHand: true },
       ];
       expect(getPreviousActiveSeatInHand(seats, 2).position).toBe(4);
+    });
+  });
+
+  describe('getBiggestBet', () => {
+    test('return biggest bet from seats', () => {
+      const table = {
+        seats: [
+          { position: 2, bet: 20 },
+          { position: 5 },
+          { position: 6, bet: 40 },
+          { position: 7, bet: 85 },
+        ],
+      };
+      expect(getBiggestBet(table)).toBe(85);
+    });
+
+    test('return 0 if no bets posted', () => {
+      const table = {
+        seats: [{ position: 0 }, { position: 0 }],
+      };
+      expect(getBiggestBet(table)).toBe(0);
     });
   });
 });
