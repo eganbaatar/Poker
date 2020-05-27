@@ -1,5 +1,8 @@
 <div class="player-wrap">
-  <div class="player-cards" ng-class="{dealt: player.hasCards}">
+  <div
+    class="player-cards"
+    ng-class="{dealt: showDealtCards(seatIndex), folded: hasFolded(seatIndex)}"
+  >
     <div
       class="card"
       ng-show="seatOccupied(seatIndex)"
@@ -24,8 +27,10 @@
     >
     <div class="player-content" ng-show="player.name">
       <div ng-show="!notifications[seatIndex].message">
-        <span>{{player.name}}</span>
-        <span ng-show="player.sittingIn">{{player.chipsInPlay}}</span>
+        <span class="player-name">{{player.name}}</span>
+        <span class="player-chips" ng-show="player.sittingIn"
+          >{{player.chipsInPlay}}</span
+        >
         <span ng-show="!player.sittingIn">Sitting Out</span>
       </div>
       <div ng-show="notifications[seatIndex].message">

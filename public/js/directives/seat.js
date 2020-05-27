@@ -47,6 +47,26 @@ app.directive('seat', [
               scope.player.name)
           );
         };
+
+        scope.showDealtCards = (seat) => {
+          return (
+            (scope.mySeat === seat && scope.myCardsDealed()) ||
+            (scope.player && scope.player.hasCards)
+          );
+        };
+
+        scope.hasFolded = (seat) => {
+          return (
+            seat === scope.mySeat &&
+            scope.myCardsDealed() &&
+            scope.player &&
+            !scope.player.inHand
+          );
+        };
+
+        scope.myCardsDealed = () => {
+          return scope.myCards[0] != '' && scope.myCards[1] != '';
+        };
       },
     };
   },
