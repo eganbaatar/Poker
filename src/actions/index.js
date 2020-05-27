@@ -7,6 +7,7 @@ const takeSeat = createAction('TAKE_SEAT');
 const startRound = createAction('START_ROUND');
 const postBlind = createAction('POST_BLIND');
 const deal = createAction('DEAL');
+const act = createAction('ACT');
 
 exports.register = register;
 exports.enterRoom = enterRoom;
@@ -15,3 +16,4 @@ exports.takeSeat = takeSeat;
 exports.startRound = startRound;
 exports.postBlind = postBlind;
 exports.deal = deal;
+exports.act = act;

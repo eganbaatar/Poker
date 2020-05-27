@@ -1,11 +1,13 @@
-const { clone, isNil, times } = require('lodash');
+const { clone, isNil, times, find } = require('lodash');
 const { createReducer } = require('@reduxjs/toolkit');
 const {
   getTableById,
   getNextActiveSeat,
+  getNextActiveSeatInHand,
+  getPreviousActiveSeatInHand,
   rotateSeatsToPosition,
 } = require('../selectors/tableSelector');
-const { takeSeat, startRound, postBlind, deal } = require('../actions');
+const { takeSeat, startRound, postBlind, deal, act } = require('../actions');
 const deck = require('../utils/deck');
 
 const reduceTakeSeat = (state, { playerId, tableId, seat }) => {
@@ -120,11 +122,45 @@ const reduceDeal = (state, { tableId }) => {
   table.board = table.board.concat(dealt.splice(1, dealCount - 1));
 };
 
+const reduceAct = (state, { tableId, seat, type, amount = 0 }) => {
+  const table = getTableById(state)(tableId);
+  let actingSeat = find(table.seats, { position: seat });
+  switch (type) {
+    case 'BET':
+    case 'RAISE':
+      actingSeat.chipsInPlay =
+        actingSeat.chipsInPlay >= amount ? actingSeat.chipsInPlay - amount : 0;
+      actingSeat.bet += amount;
+      table.toAct = getNextActiveSeatInHand(table.seats, seat).position;
+      table.lastPlayerToAct = getPreviousActiveSeatInHand(
+        table.seats,
+        seat
+      ).position;
+      break;
+    case 'CALL':
+      actingSeat.chipsInPlay =
+        actingSeat.chipsInPlay >= amount ? actingSeat.chipsInPlay - amount : 0;
+      actingSeat.bet += amount;
+      table.toAct = getNextActiveSeatInHand(table.seats, seat).position;
+      break;
+    case 'CHECK':
+      table.toAct = getNextActiveSeatInHand(table.seats, seat).position;
+      break;
+    case 'FOLD':
+      table.toAct = getNextActiveSeatInHand(table.seats, seat).position;
+      actingSeat.inHand = false;
+      break;
+    default:
+      throw Error(`invalid player action type ${type}`);
+  }
+};
+
 const tables = createReducer((state = {}), {
   [takeSeat]: (state, action) => reduceTakeSeat(state, action.payload),
   [startRound]: (state, action) => reduceStartRound(state, action.payload),
   [postBlind]: (state, action) => reducePostBlind(state, action.payload),
   [deal]: (state, action) => reduceDeal(state, action.payload),
+  [act]: (state, action) => reduceAct(state, action.payload),
 });
 
 module.exports = tables;
