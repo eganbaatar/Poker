@@ -20,10 +20,10 @@ const INITIAL_CHIPS_AMOUNT = 10000;
 // reference to io instance
 let io;
 
-const playersSlice = (store) => {
+const playersSlice = () => {
   return store.getState().players;
 };
-const tablesSlice = (store) => {
+const tablesSlice = () => {
   return store.getState().tables;
 };
 
@@ -113,7 +113,7 @@ const handleRegister = (_screenName, socket, callback) => {
     return callback({ success: false, message: '' });
   }
 
-  const player = getPlayerById(state, socket.id);
+  const player = getPlayerById(playersSlice())(socket.id);
 
   // Player with socket id already exists
   if (!isNil(player)) {
@@ -121,7 +121,7 @@ const handleRegister = (_screenName, socket, callback) => {
   }
 
   // If player with same name exists
-  if (getPlayerByName(state, screenName)) {
+  if (getPlayerByName(playersSlice())(screenName)) {
     return callback({ success: false, message: 'This name is taken' });
   }
 

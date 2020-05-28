@@ -52,7 +52,6 @@ app.get('/', function (req, res) {
 app.get('/lobby-data', function (req, res) {
   const tables = Object.values(store.getState().tables.byId);
   const lobbyTables = tables.map((table) => getTableDataForLobby(table));
-  console.log(lobbyTables);
   res.send(lobbyTables);
 });
 
