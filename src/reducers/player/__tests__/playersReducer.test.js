@@ -1,5 +1,10 @@
 const reducer = require('../playersReducer');
-const { register, enterRoom, leaveRoom, takeSeat } = require('../../actions');
+const {
+  register,
+  enterRoom,
+  leaveRoom,
+  takeSeat,
+} = require('../../../actions');
 
 describe('Players reducer', () => {
   describe('register', () => {

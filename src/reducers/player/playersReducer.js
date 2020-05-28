@@ -1,6 +1,6 @@
 const { createReducer } = require('@reduxjs/toolkit');
-const { register, enterRoom, leaveRoom, takeSeat } = require('../actions');
-const { getPlayerById } = require('../selectors/playersSelector');
+const { register, enterRoom, leaveRoom, takeSeat } = require('../../actions');
+const { getPlayerById } = require('../../selectors/playersSelector');
 
 const addPlayer = (state, { id, name, chips }) => {
   state.byId[id] = { id, name, chips, seat: -1 };
