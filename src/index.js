@@ -11,10 +11,9 @@ const sharedsession = require('express-socket.io-session');
 const _ = require('lodash');
 const logger = require('./utils/logger');
 const { init } = require('./api/socket');
-const tables = require('./models/data');
-
 const publicPath = path.resolve(__dirname, '../public');
-console.log(publicPath);
+const store = require('./models/store');
+const { getTableDataForLobby, getPublicTableData } = require('./api/wrapper');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -51,20 +50,9 @@ app.get('/', function (req, res) {
 
 // The lobby data (the array of tables and their data)
 app.get('/lobby-data', function (req, res) {
-  var lobbyTables = [];
-  for (var tableId in tables) {
-    // Sending the public data of the public tables to the lobby screen
-    if (!tables[tableId].privateTable) {
-      lobbyTables[tableId] = {};
-      lobbyTables[tableId].id = tables[tableId].public.id;
-      lobbyTables[tableId].name = tables[tableId].public.name;
-      lobbyTables[tableId].seatsCount = tables[tableId].public.seatsCount;
-      lobbyTables[tableId].playersSeatedCount =
-        tables[tableId].public.playersSeatedCount;
-      lobbyTables[tableId].bigBlind = tables[tableId].public.bigBlind;
-      lobbyTables[tableId].smallBlind = tables[tableId].public.smallBlind;
-    }
-  }
+  const tables = Object.values(store.getState().tables.byId);
+  const lobbyTables = tables.map((table) => getTableDataForLobby(table));
+  console.log(lobbyTables);
   res.send(lobbyTables);
 });
 
@@ -94,4 +82,4 @@ app.get('/table-data/:tableId', function (req, res) {
 });
 
 // init socket controller
-init(io, tables);
+init(io);

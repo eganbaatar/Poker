@@ -19,8 +19,6 @@ const INITIAL_CHIPS_AMOUNT = 10000;
 
 // reference to io instance
 let io;
-let players = {};
-let tables = [];
 
 const playersSlice = (store) => {
   return store.getState().players;
@@ -463,9 +461,8 @@ function htmlEntities(str) {
     .replace(/"/g, '&quot;');
 }
 
-const init = (_io, _tables) => {
+const init = (_io) => {
   io = _io;
-  tables = _tables;
   addListeners();
 };
 
