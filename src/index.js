@@ -14,6 +14,7 @@ const { init } = require('./api/socket');
 const publicPath = path.resolve(__dirname, '../public');
 const store = require('./models/store');
 const { getTableDataForLobby, getPublicTableData } = require('./api/wrapper');
+const { getTableById } = require('./selectors/tableSelector');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -72,12 +73,14 @@ app.get('/table-2/:tableId', function (req, res) {
 
 // The table data
 app.get('/table-data/:tableId', function (req, res) {
-  if (
-    typeof req.params.tableId !== 'undefined' &&
-    typeof tables[req.params.tableId] !== 'undefined'
-  ) {
-    res.send({ table: tables[req.params.tableId].public });
+  if (_.isNil(req.params.tableId)) {
+    res.status(400).send('tableId not defined');
   }
+  const table = getTableById(store.getState().tables);
+  if (!table) {
+    res.status(404).send('table not found');
+  }
+  res.send({ table: getPublicTableData(table) });
 });
 
 // init socket controller
