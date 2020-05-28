@@ -1,5 +1,5 @@
-const players = require('./playersReducer');
-const tables = require('./tableReducer');
+const players = require('./player/playersReducer');
+const tables = require('./table/tableReducer');
 const reducer = {
   players,
   tables,
