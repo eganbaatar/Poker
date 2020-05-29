@@ -97,6 +97,19 @@ const getBiggestBet = (table) => {
   return get(maxBy(table.seats, 'bet'), 'bet', 0);
 };
 
+const getDefaultSeatObject = () => {
+  return {
+    playerId: null,
+    position: null,
+    chipsInPlay: 0,
+    inHand: false,
+    isAllIn: false,
+    cards: [],
+    bet: 0,
+    sittingOut: false,
+  };
+};
+
 exports.allTablesById = allTablesById;
 exports.allTablesByArray = allTablesByArray;
 exports.getTableById = getTableById;
@@ -106,3 +119,4 @@ exports.getNextActiveSeatInHand = getNextActiveSeatInHand;
 exports.getPreviousActiveSeatInHand = getPreviousActiveSeatInHand;
 exports.rotateSeatsToPosition = rotateSeatsToPosition;
 exports.getBiggestBet = getBiggestBet;
+exports.getDefaultSeatObject = getDefaultSeatObject;

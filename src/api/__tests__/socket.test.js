@@ -1,6 +1,7 @@
 const store = require('../../models/store');
 const socket = require('../socket');
 const { takeSeat, startRound } = require('../../actions');
+const { getDefaultSeatObject } = require('../../selectors/tableSelector');
 
 describe('socket', () => {
   let mockCallback;
@@ -15,26 +16,37 @@ describe('socket', () => {
     let stateSpy;
     beforeEach(() => {
       spyDispatch = jest.spyOn(store, 'dispatch');
+      spyDispatch.mockImplementation(jest.fn());
       stateSpy = jest.spyOn(store, 'getState');
       stateSpy.mockReturnValue({
         tables: {
           byId: {
             0: {
               id: 0,
-              seats: [1, 2, 3, 4, null, null],
+              seats: [
+                {
+                  ...getDefaultSeatObject(),
+                  position: 1,
+                },
+                {
+                  ...getDefaultSeatObject(),
+                  position: 2,
+                },
+                {
+                  ...getDefaultSeatObject(),
+                  position: 3,
+                },
+                {
+                  ...getDefaultSeatObject(),
+                  position: 4,
+                },
+              ],
               seatCount: 10,
               maxBuyIn: 1000,
               minBuyIn: 500,
               gameOn: true,
             },
-            1: {
-              id: 1,
-              seats: [1],
-              seatCount: 6,
-              activeSeatsCount: 1,
-              maxBuyIn: 1000,
-              minBuyIn: 200,
-            },
+
             2: {
               id: 2,
               seats: [],
@@ -273,22 +285,19 @@ describe('socket', () => {
     });
     test('success', () => {
       const mockEmit = jest.fn((arg) => {});
-      const broadcast = {
-        to: (arg) => {
-          return {
-            emit: mockEmit,
-          };
+      const mockIo = {
+        sockets: {
+          in: (room) => ({ emit: mockEmit }),
         },
       };
       const mockSocket = {
         id: 4,
-        broadcast,
       };
-      const toSpy = jest.spyOn(broadcast, 'to');
       socket.handleSitOnTheTable(
-        { seat: 5, tableId: 0, chips: 600 },
+        { playerId: '1a', seat: 5, tableId: 0, chips: 600 },
         mockCallback,
-        mockSocket
+        mockSocket,
+        mockIo
       );
       expect(spyDispatch).toHaveBeenCalledWith(
         takeSeat({ playerId: 4, tableId: 0, chips: 600, seat: 5 })
@@ -297,38 +306,66 @@ describe('socket', () => {
       expect(mockCallback).toHaveBeenCalledWith({
         success: true,
       });
-      expect(toSpy).toHaveBeenCalledWith('table-0');
-      expect(mockEmit).toHaveBeenCalledWith('table-data', undefined);
+      expect(mockEmit).toHaveBeenCalled();
     });
 
     test('start new round if nessessary', () => {
       const mockEmit = jest.fn((arg) => {});
-      const broadcast = {
-        to: (arg) => {
-          return {
-            emit: mockEmit,
-          };
+
+      const mockIo = {
+        sockets: {
+          in: () => ({ emit: mockEmit }),
         },
       };
       const mockSocket = {
         id: 5,
-        broadcast,
       };
-      const toSpy = jest.spyOn(broadcast, 'to');
+      stateSpy.mockReturnValue({
+        tables: {
+          byId: {
+            1: {
+              id: 1,
+              seats: [
+                {
+                  ...getDefaultSeatObject(),
+                  position: 1,
+                },
+              ],
+              seatCount: 6,
+              activeSeatsCount: 2,
+              maxBuyIn: 1000,
+              minBuyIn: 200,
+            },
+          },
+        },
+        players: {
+          byId: {
+            5: {
+              id: 5,
+              room: 1,
+              chips: 5000,
+            },
+          },
+        },
+      });
       socket.handleSitOnTheTable(
         { seat: 1, tableId: 1, chips: 600 },
         mockCallback,
-        mockSocket
+        mockSocket,
+        mockIo
       );
-      expect(spyDispatch).toHaveBeenCalledWith(
+      expect(spyDispatch).toHaveBeenNthCalledWith(
+        1,
         takeSeat({ playerId: 5, tableId: 1, chips: 600, seat: 1 })
       );
-      expect(spyDispatch).not.toHaveBeenCalledWith(startRound({ tableId: 1 }));
+      expect(spyDispatch).toHaveBeenNthCalledWith(
+        2,
+        startRound({ tableId: 1 })
+      );
       expect(mockCallback).toHaveBeenCalledWith({
         success: true,
       });
-      expect(toSpy).toHaveBeenCalledWith('table-1');
-      expect(mockEmit).toHaveBeenCalledWith('table-data', undefined);
+      expect(mockEmit).toHaveBeenCalled();
     });
     test('do not start new round if only one player present', () => {
       const mockEmit = jest.fn((arg) => {});

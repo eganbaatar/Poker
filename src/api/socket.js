@@ -145,14 +145,14 @@ const handleRegister = (_screenName, socket, callback) => {
  * When a player requests to sit on a table
  * @param function callback
  */
-const handleSitOnTheTable = (data, callback, socket) => {
+const handleSitOnTheTable = (data, callback, socket, io) => {
   const { seat, tableId, chips } = data;
   if (isNil(seat) || isNil(tableId) || isNil(chips)) {
     callback({ success: false, error: 'invalid data' });
   }
 
-  const player = getPlayerById(playersSlice(store))(socket.id);
-  const table = getTableById(tablesSlice(store))(tableId);
+  const player = getPlayerById(playersSlice())(socket.id);
+  const table = getTableById(tablesSlice())(tableId);
 
   /*
    * Data defined but incorrect
@@ -195,12 +195,9 @@ const handleSitOnTheTable = (data, callback, socket) => {
   if (!table.gameOn && table.activeSeatsCount > 1) {
     store.dispatch(startRound({ tableId }));
   }
-
-  socket.broadcast
-    .to(`table-${tableId}`)
-    .emit('table-data', getPublicTableData(tableId));
-
+  const tableData = getPublicTableData(table);
   callback({ success: true });
+  io.sockets.in(`table-${tableId}`).emit('table-data', tableData);
 };
 
 /**
@@ -478,7 +475,7 @@ const addListeners = () => {
       handleRegister(name, socket, callback)
     );
     socket.on(event.sitOnTheTable, (data, callback) =>
-      handleSitOnTheTable(data, callback, socket)
+      handleSitOnTheTable(data, callback, socket, io)
     );
     socket.on(event.sitIn, (callback) => handleSitIn(callback, socket));
     socket.on(event.postBlind, (postBlind, callback) =>
