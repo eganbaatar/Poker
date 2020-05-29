@@ -1,5 +1,9 @@
 const getPublicSeatInfos = (table) => {
-  return [];
+  return Array(10).fill(null);
+};
+
+const padBoard = (board) => {
+  return ['', '', '', '', ''];
 };
 
 const getPublicTableData = (table) => {
@@ -34,9 +38,11 @@ const getPublicTableData = (table) => {
     dealerSeat: button,
     activeSeat: toAct,
     seats: getPublicSeatInfos(table),
+    // lastRaise: , TODO
+    // biggestBet: , TODO
     //  pot TODO not implemented yet
     phase,
-    board,
+    board: padBoard(board),
   };
 };
 

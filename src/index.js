@@ -76,7 +76,7 @@ app.get('/table-data/:tableId', function (req, res) {
   if (_.isNil(req.params.tableId)) {
     res.status(400).send('tableId not defined');
   }
-  const table = getTableById(store.getState().tables);
+  const table = getTableById(store.getState().tables)(req.params.tableId);
   if (!table) {
     res.status(404).send('table not found');
   }

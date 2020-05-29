@@ -106,14 +106,14 @@ const handleLeaveTable = (callback, socket) => {
  * @param function callback
  */
 const handleRegister = (_screenName, socket, callback) => {
-  const state = store.getState();
+  const players = playersSlice();
   const screenName = _screenName.trim();
 
   if (isNil(screenName)) {
     return callback({ success: false, message: '' });
   }
 
-  const player = getPlayerById(playersSlice())(socket.id);
+  const player = getPlayerById(players)(socket.id);
 
   // Player with socket id already exists
   if (!isNil(player)) {
@@ -121,7 +121,7 @@ const handleRegister = (_screenName, socket, callback) => {
   }
 
   // If player with same name exists
-  if (getPlayerByName(playersSlice())(screenName)) {
+  if (getPlayerByName(players)(screenName)) {
     return callback({ success: false, message: 'This name is taken' });
   }
 
