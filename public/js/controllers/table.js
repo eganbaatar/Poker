@@ -381,6 +381,7 @@ app.controller('TableController', [
     };
 
     $scope.setActionReminder = function () {
+      sounds.playActionReminderSound();
       if ($scope.table.minActionTimeout) {
         if ($scope.countDownTimer !== null) {
           clearInterval($scope.countDownTimer);
