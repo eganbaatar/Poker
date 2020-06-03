@@ -1,6 +1,6 @@
 const { isNil, find } = require('lodash');
 
-const getPublicSeatInfos = (table) => {
+const getPublicSeatInfos = (table, players) => {
   const seats = table.seats;
   let result = Array(table.seatsCount).fill(null);
   for (let i = 0; i < table.seatsCount; i++) {
@@ -8,14 +8,15 @@ const getPublicSeatInfos = (table) => {
     if (isNil(seat)) {
       continue;
     }
-    const { bet, cards, chipsInPlay, inHand, name, sittingIn } = seat;
+    const { playerId, bet, cards, chipsInPlay, inHand, sittingIn } = seat;
+    const player = find(players, { id: playerId });
     result[i] = {
       bet,
       cards: [],
       chipsInPlay,
       hasCards: cards.length > 0,
       inHand,
-      name,
+      name: player.name,
       sittingIn,
     };
   }
@@ -26,7 +27,7 @@ const padBoard = (board) => {
   return ['', '', '', '', ''];
 };
 
-const getPublicTableData = (table) => {
+const getPublicTableData = (table, players) => {
   const {
     id,
     name,
@@ -56,7 +57,7 @@ const getPublicTableData = (table) => {
     maxActionTimeout,
     dealerSeat: button,
     activeSeat: toAct,
-    seats: getPublicSeatInfos(table),
+    seats: getPublicSeatInfos(table, players),
     // lastRaise: , TODO
     // biggestBet: , TODO
     //  pot TODO not implemented yet

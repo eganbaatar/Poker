@@ -11,6 +11,7 @@ const {
 const {
   getPlayerById,
   getPlayerByName,
+  allPlayersByArray,
 } = require('../selectors/playersSelector');
 const { getTableById } = require('../selectors/tableSelector');
 const { getPublicTableData } = require('./wrapper');
@@ -195,7 +196,11 @@ const handleSitOnTheTable = (data, callback, socket, io) => {
   if (!table.gameOn && table.activeSeatsCount > 1) {
     store.dispatch(startRound({ tableId }));
   }
-  const tableData = getPublicTableData(table);
+
+  const tableData = getPublicTableData(
+    getTableById(tablesSlice())(tableId),
+    allPlayersByArray(playersSlice())
+  );
   callback({ success: true });
   io.sockets.in(`table-${tableId}`).emit('table-data', tableData);
 };

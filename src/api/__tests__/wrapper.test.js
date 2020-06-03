@@ -27,7 +27,17 @@ describe('getPublicTableData', () => {
         },
       ],
     };
-    const publicData = getPublicTableData(table);
+    const players = [
+      {
+        id: '1',
+        name: 'John',
+      },
+      {
+        id: '2',
+        name: 'Max',
+      },
+    ];
+    const publicData = getPublicTableData(table, players);
     expect(publicData.seats).toEqual([
       {
         bet: 0,
@@ -37,6 +47,7 @@ describe('getPublicTableData', () => {
         inHand: false,
         name: undefined,
         sittingIn: true,
+        name: 'John',
       },
       null,
       null,
@@ -46,7 +57,7 @@ describe('getPublicTableData', () => {
         chipsInPlay: 700,
         hasCards: true,
         inHand: true,
-        name: undefined,
+        name: 'Max',
         sittingIn: true,
       },
       null,
