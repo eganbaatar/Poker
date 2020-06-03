@@ -1,17 +1,17 @@
-const { isNil } = require('lodash');
+const { isNil, find } = require('lodash');
 
 const getPublicSeatInfos = (table) => {
   const seats = table.seats;
   let result = Array(table.seatsCount).fill(null);
-  for (let i = 0; i < seats.length; i++) {
-    const seat = seats[i];
+  for (let i = 0; i < table.seatsCount; i++) {
+    const seat = find(seats, { position: i });
     if (isNil(seat)) {
-      return;
+      continue;
     }
-    const { bet, cards, chipsInPlay, hasCards, inHand, name, sittingIn } = seat;
+    const { bet, cards, chipsInPlay, inHand, name, sittingIn } = seat;
     result[i] = {
       bet,
-      cards,
+      cards: [],
       chipsInPlay,
       hasCards: cards.length > 0,
       inHand,
@@ -40,7 +40,6 @@ const getPublicTableData = (table) => {
     maxActionTimeout,
     button,
     toAct,
-    seats,
     phase,
     board,
   } = table;
