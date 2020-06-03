@@ -21,7 +21,8 @@ const reduceStartRound = (state, { tableId }) => {
   Object.assign(table, defaultTableInfo);
 
   table.seats = table.seats.map((seat) => {
-    const sitPlayerOut = seat.chipsInPlay <= 0 || seat.sittingOut === true;
+    const sitPlayerOut =
+      !isNil(seat) && (seat.chipsInPlay <= 0 || seat.sittingOut === true);
     return {
       ...seat,
       ...defaultSeatInfo,

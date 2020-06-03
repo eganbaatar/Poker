@@ -152,8 +152,8 @@ const handleSitOnTheTable = (data, callback, socket, io) => {
     callback({ success: false, error: 'invalid data' });
   }
 
-  const player = getPlayerById(playersSlice())(socket.id);
-  const table = getTableById(tablesSlice())(tableId);
+  let player = getPlayerById(playersSlice())(socket.id);
+  let table = getTableById(tablesSlice())(tableId);
 
   /*
    * Data defined but incorrect
@@ -191,6 +191,8 @@ const handleSitOnTheTable = (data, callback, socket, io) => {
   }
 
   store.dispatch(takeSeat({ playerId: socket.id, tableId, seat, chips }));
+
+  table = getTableById(tablesSlice())(tableId);
 
   // game will start if more than 1 player sitting and game is not on
   if (!table.gameOn && table.activeSeatsCount > 1) {
