@@ -1,7 +1,11 @@
-const { getPublicTableData } = require('../wrapper');
+const {
+  getPublicTableData,
+  getLastRaise,
+  getBiggestBet,
+} = require('../wrapper');
 
-describe('getPublicTableData', () => {
-  test('expose public seat infos', () => {
+describe('wrapper', () => {
+  test('getPublicTableData', () => {
     const table = {
       seatsCount: 6,
       seats: [
@@ -63,5 +67,39 @@ describe('getPublicTableData', () => {
       null,
       null,
     ]);
+  });
+  test('getLastRaise', () => {
+    const table = {
+      seats: [
+        null,
+        { bet: 5 },
+        { bet: 10 },
+        null,
+        {
+          bet: 15,
+        },
+        {
+          bet: 35,
+        },
+      ],
+    };
+    expect(getLastRaise(table)).toBe(20);
+  });
+  test('getBiggestBet', () => {
+    const table = {
+      seats: [
+        null,
+        { bet: 5 },
+        { bet: 10 },
+        null,
+        {
+          bet: 15,
+        },
+        {
+          bet: 35,
+        },
+      ],
+    };
+    expect(getBiggestBet(table)).toBe(35);
   });
 });

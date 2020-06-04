@@ -518,20 +518,38 @@ function emitNextAction(tableId) {
   if (!table.gameOn) {
     return;
   }
-  const action = getNextAction(table.phase);
+  const action = getNextAction(table);
   const socketId = find(table.seats, { position: table.toAct }).playerId;
   io.to(socketId).emit(action);
 }
 
-function getNextAction(currentPhase) {
+function getNextAction(table) {
+  const currentPhase = table.phase;
   if (currentPhase === 'smallBlind') {
     return 'postSmallBlind';
   }
   if (currentPhase === 'bigBlind') {
     return 'postBigBlind';
   }
-  return 'actBettedPot';
+  return isSomePlayerAllIn(table)
+    ? 'actOthersAllIn'
+    : hasSomePlayerBetted(table)
+    ? 'actBettedPot'
+    : 'actNotBettedPot';
 }
+
+function isSomePlayerAllIn(table) {
+  return !!find(table.seats, (seat) => {
+    return seat && seat.inHand === true && seat.chipsInPlay <= 0;
+  });
+}
+
+function hasSomePlayerBetted(table) {
+  return !!find(table.seats, (seat) => {
+    return seat && seat.bet > 0;
+  });
+}
+
 exports.init = init;
 exports.eventEmitter = eventEmitter;
 exports.handleSitOnTheTable = handleSitOnTheTable;

@@ -1,4 +1,4 @@
-const { isNil, find } = require('lodash');
+const { get, isNil, find, orderBy, maxBy } = require('lodash');
 
 const getPublicSeatInfos = (table, players) => {
   const seats = table.seats;
@@ -58,8 +58,8 @@ const getPublicTableData = (table, players) => {
     dealerSeat: button,
     activeSeat: toAct,
     seats: getPublicSeatInfos(table, players),
-    // lastRaise: , TODO
-    // biggestBet: , TODO
+    lastRaise: getLastRaise(table),
+    biggestBet: getBiggestBet(table),
     //  pot TODO not implemented yet
     phase,
     board: padBoard(board),
@@ -78,5 +78,29 @@ const getTableDataForLobby = (table) => {
   };
 };
 
+const getLastRaise = (table) => {
+  const orderedSeats = orderBy(
+    table.seats.filter((seat) => !isNil(seat)),
+    ['bet'],
+    ['desc']
+  );
+  return orderedSeats.length > 1
+    ? orderedSeats[0].bet - orderedSeats[1].bet
+    : 0;
+};
+
+const getBiggestBet = (table) => {
+  return get(
+    maxBy(
+      table.seats.filter((seat) => !isNil(seat)),
+      'bet'
+    ),
+    'bet',
+    0
+  );
+};
+
 exports.getPublicTableData = getPublicTableData;
 exports.getTableDataForLobby = getTableDataForLobby;
+exports.getLastRaise = getLastRaise;
+exports.getBiggestBet = getBiggestBet;

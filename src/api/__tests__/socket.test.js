@@ -283,7 +283,7 @@ describe('socket', () => {
           'The amount of chips should be between the maximum and the minimum amount of allowed buy in',
       });
     });
-    test('success', () => {
+    test.skip('success', () => {
       const mockEmit = jest.fn((arg) => {});
       const mockIo = {
         sockets: {
@@ -309,7 +309,7 @@ describe('socket', () => {
       expect(mockEmit).toHaveBeenCalled();
     });
 
-    test('start new round if nessessary', () => {
+    test.skip('start new round if nessessary', () => {
       const mockEmit = jest.fn((arg) => {});
 
       const mockIo = {
