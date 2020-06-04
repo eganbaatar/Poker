@@ -8,7 +8,7 @@ const getPublicSeatInfos = (table, players) => {
     if (isNil(seat)) {
       continue;
     }
-    const { playerId, bet, cards, chipsInPlay, inHand, sittingIn } = seat;
+    const { playerId, bet, cards, chipsInPlay, inHand, sittingOut } = seat;
     const player = find(players, { id: playerId });
     result[i] = {
       bet,
@@ -17,7 +17,7 @@ const getPublicSeatInfos = (table, players) => {
       hasCards: cards.length > 0,
       inHand,
       name: player.name,
-      sittingIn,
+      sittingIn: !sittingOut,
     };
   }
   return result;
