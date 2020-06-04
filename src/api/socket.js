@@ -8,13 +8,14 @@ const {
   takeSeat,
   startRound,
   postBlind,
+  reduceAct,
 } = require('../actions');
 const {
   getPlayerById,
   getPlayerByName,
   allPlayersByArray,
 } = require('../selectors/playersSelector');
-const { canPostBlind } = require('./validators');
+const { canPostBlind, canCheck } = require('./validators');
 const { getTableById } = require('../selectors/tableSelector');
 const { getPublicTableData } = require('./wrapper');
 
@@ -251,25 +252,24 @@ const handlePostBlind = (postedBlind, callback, socket) => {
  * @param function callback
  */
 const handleCheck = (callback, socket) => {
-  if (isPlayerOnTable(socket.id)) {
-    var tableId = players[socket.id].sittingOnTable;
-    var activeSeat = tables[tableId].public.activeSeat;
-
-    if (
-      (tables[tableId] &&
-        tables[tableId].seats[activeSeat].socket.id === socket.id &&
-        !tables[tableId].public.biggestBet) ||
-      (tables[tableId].public.phase === 'preflop' &&
-        tables[tableId].public.biggestBet === players[socket.id].public.bet &&
-        ['preflop', 'flop', 'turn', 'river'].indexOf(
-          tables[tableId].public.phase
-        ) > -1)
-    ) {
-      // Sending the callback first, because the next functions may need to send data to the same player, that shouldn't be overwritten
-      callback({ success: true });
-      tables[tableId].playerChecked();
-    }
+  const table = getTableById(tablesSlice())(socket.id);
+  if (!canCheck(socket.id, table)) {
+    callback({ success: false, error: 'check not allowed' });
   }
+  const isEndOfRound = table.lastPlayerToAct === table.toAct;
+
+  store.dispatch(
+    reduceAct({ tableId: table.id, seat: table.toAct, type: 'CHECK' })
+  );
+
+  table = getTableById(tablesSlice())(socket.id);
+
+  // if player is last to act then end current round and start new round
+  if (isEndOfRound) {
+    store.dispatch(reduceEndRound({ tableId: table.id }));
+    emitPublicData(table.id);
+  }
+  callback({ success: true });
 };
 
 /**
@@ -434,31 +434,15 @@ const handleSendMessage = (message, socket) => {
     socket.broadcast
       .to('table-' + players[socket.id].room)
       .emit('receiveMessage', {
-        message: htmlEntities(message),
+        message,
         sender: players[socket.id].public.name,
       });
   }
 };
 
-/**
- * Changes certain characters in a string to html entities
- * @param string str
- */
-function htmlEntities(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
 const init = (_io) => {
   io = _io;
   addListeners();
-};
-
-const getPlayer = (id) => {
-  return players[id];
 };
 
 const addListeners = () => {
@@ -493,16 +477,6 @@ const addListeners = () => {
       handleLeaveTable(callback, socket)
     );
   });
-};
-
-/**
- * Event emitter function that will be sent to the table objects
- * Tables use the eventEmitter in order to send events to the client
- * and update the table data in the ui
- * @param string tableId
- */
-const eventEmitter = (tableId) => (eventName, eventData) => {
-  io.sockets.in('table-' + tableId).emit(eventName, eventData);
 };
 
 function emitPublicData(tableId) {
@@ -551,5 +525,4 @@ function hasSomePlayerBetted(table) {
 }
 
 exports.init = init;
-exports.eventEmitter = eventEmitter;
 exports.handleSitOnTheTable = handleSitOnTheTable;
