@@ -7,12 +7,14 @@ const {
   leaveRoom,
   takeSeat,
   startRound,
+  postBlind,
 } = require('../actions');
 const {
   getPlayerById,
   getPlayerByName,
   allPlayersByArray,
 } = require('../selectors/playersSelector');
+const { canPostBlind } = require('./validators');
 const { getTableById } = require('../selectors/tableSelector');
 const { getPublicTableData } = require('./wrapper');
 
@@ -197,17 +199,11 @@ const handleSitOnTheTable = (data, callback, socket, io) => {
   // game will start if more than 1 player sitting and game is not on
   if (!table.gameOn && table.activeSeatsCount > 1) {
     store.dispatch(startRound({ tableId }));
-    table = getTableById(tablesSlice())(tableId);
-    const socketId = find(table.seats, { position: table.toAct }).playerId;
-    io.to(socketId).emit('postSmallBlind');
   }
 
-  const tableData = getPublicTableData(
-    getTableById(tablesSlice())(tableId),
-    allPlayersByArray(playersSlice())
-  );
   callback({ success: true });
-  io.sockets.in(`table-${tableId}`).emit('table-data', tableData);
+  emitPublicData(tableId);
+  emitNextAction(tableId);
 };
 
 /**
@@ -234,32 +230,20 @@ const handleSitIn = (callback, socket) => {
  * @param function callback
  */
 const handlePostBlind = (postedBlind, callback, socket) => {
-  if (isPlayerOnTable(socket.id)) {
-    var tableId = players[socket.id].sittingOnTable;
-    var activeSeat = tables[tableId].public.activeSeat;
+  const player = getPlayerById(playersSlice())(socket.id);
+  const table = getTableById(tablesSlice())(player.room);
 
-    if (
-      tables[tableId] &&
-      typeof tables[tableId].seats[activeSeat].public !== 'undefined' &&
-      tables[tableId].seats[activeSeat].socket.id === socket.id &&
-      (tables[tableId].public.phase === 'smallBlind' ||
-        tables[tableId].public.phase === 'bigBlind')
-    ) {
-      if (postedBlind) {
-        callback({ success: true });
-        if (tables[tableId].public.phase === 'smallBlind') {
-          // The player posted the small blind
-          tables[tableId].playerPostedSmallBlind();
-        } else {
-          // The player posted the big blind
-          tables[tableId].playerPostedBigBlind();
-        }
-      } else {
-        tables[tableId].playerSatOut(players[socket.id].seat);
-        callback({ success: true });
-      }
-    }
+  if (!canPostBlind(socket.id, table)) {
+    callback({ success: false, error: 'not allowed to post blind' });
   }
+
+  store.dispatch(
+    postBlind({ tableId: table.id, isSmallBlind: table.phase === 'smallBlind' })
+  );
+
+  callback({ success: true });
+  emitPublicData(table.id);
+  emitNextAction(table.id);
 };
 
 /**
@@ -521,6 +505,33 @@ const eventEmitter = (tableId) => (eventName, eventData) => {
   io.sockets.in('table-' + tableId).emit(eventName, eventData);
 };
 
+function emitPublicData(tableId) {
+  const tableData = getPublicTableData(
+    getTableById(tablesSlice())(tableId),
+    allPlayersByArray(playersSlice())
+  );
+  io.sockets.in(`table-${tableId}`).emit('table-data', tableData);
+}
+
+function emitNextAction(tableId) {
+  const table = getTableById(tablesSlice())(tableId);
+  if (!table.gameOn) {
+    return;
+  }
+  const action = getNextAction(table.phase);
+  const socketId = find(table.seats, { position: table.toAct }).playerId;
+  io.to(socketId).emit(action);
+}
+
+function getNextAction(currentPhase) {
+  if (currentPhase === 'smallBlind') {
+    return 'postSmallBlind';
+  }
+  if (currentPhase === 'bigBlind') {
+    return 'postBigBlind';
+  }
+  return 'actBettedPot';
+}
 exports.init = init;
 exports.eventEmitter = eventEmitter;
 exports.handleSitOnTheTable = handleSitOnTheTable;
