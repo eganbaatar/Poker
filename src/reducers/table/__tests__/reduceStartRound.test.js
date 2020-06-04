@@ -182,6 +182,44 @@ describe('startRound', () => {
     const table = getTableById(newState)(0);
     expect(table.button).toBe(2);
   });
+  test('handle null seat', () => {
+    const state = {
+      byId: {
+        0: {
+          id: 0,
+          gameOn: false,
+          seatCount: 5,
+          activeSeatsCount: 2,
+          seats: [
+            undefined,
+            {
+              position: 1,
+              playerId: '1',
+              chipsInPlay: 0,
+              inHand: true,
+              isAllIn: true,
+              cards: ['5c', '9h'],
+              bet: 120,
+            },
+            {
+              position: 2,
+              playerId: '2',
+              chipsInPlay: 200,
+              inHand: true,
+              isAllIn: false,
+              cards: ['Ks', '2c'],
+              bet: 70,
+            },
+          ],
+          board: ['4c', '3d', 'Kd', '9c', '2h'],
+          deck: deck.shuffle(),
+        },
+      },
+    };
+    const newState = reducer(state, startRound({ tableId: 0 }));
+    const table = getTableById(newState)(0);
+    expect(table.activeSeatsCount).toBe(1);
+  });
   describe('pass action to small blind', () => {
     test('if heads up then dealer posts small bind', () => {
       const state = {

@@ -6,7 +6,7 @@ describe('takeSeat', () => {
     const state = {
       byId: {
         0: {
-          seats: ['socket-1', 'socket-12'],
+          seats: [null, { playerId: 'socket-1' }, { playerId: 'socket-12' }],
           activeSeatsCount: 2,
         },
       },

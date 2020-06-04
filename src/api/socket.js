@@ -203,6 +203,7 @@ const handleSitOnTheTable = (data, callback, socket, io) => {
     getTableById(tablesSlice())(tableId),
     allPlayersByArray(playersSlice())
   );
+  console.log(tableData.playersSeatedCount);
   callback({ success: true });
   io.sockets.in(`table-${tableId}`).emit('table-data', tableData);
 };

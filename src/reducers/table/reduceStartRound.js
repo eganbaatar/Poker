@@ -21,8 +21,10 @@ const reduceStartRound = (state, { tableId }) => {
   Object.assign(table, defaultTableInfo);
 
   table.seats = table.seats.map((seat) => {
-    const sitPlayerOut =
-      !isNil(seat) && (seat.chipsInPlay <= 0 || seat.sittingOut === true);
+    if (isNil(seat)) {
+      return;
+    }
+    const sitPlayerOut = seat.chipsInPlay <= 0 || seat.sittingOut === true;
     return {
       ...seat,
       ...defaultSeatInfo,
@@ -31,7 +33,9 @@ const reduceStartRound = (state, { tableId }) => {
     };
   });
 
-  const activeSeats = table.seats.filter((seat) => seat.sittingOut != true);
+  const activeSeats = table.seats.filter(
+    (seat) => !isNil(seat) && seat.sittingOut != true
+  );
   table.activeSeatsCount = activeSeats.length;
 
   // assign dealer button to random seat or to next player
