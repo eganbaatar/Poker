@@ -1,5 +1,5 @@
 const event = require('./socket-event');
-const { isNil, get, isInteger } = require('lodash');
+const { isNil, get, isInteger, find } = require('lodash');
 const store = require('../models/store');
 const {
   register,
@@ -197,13 +197,15 @@ const handleSitOnTheTable = (data, callback, socket, io) => {
   // game will start if more than 1 player sitting and game is not on
   if (!table.gameOn && table.activeSeatsCount > 1) {
     store.dispatch(startRound({ tableId }));
+    table = getTableById(tablesSlice())(tableId);
+    const socketId = find(table.seats, { position: table.toAct }).playerId;
+    io.to(socketId).emit('postSmallBlind');
   }
 
   const tableData = getPublicTableData(
     getTableById(tablesSlice())(tableId),
     allPlayersByArray(playersSlice())
   );
-  console.log(tableData.playersSeatedCount);
   callback({ success: true });
   io.sockets.in(`table-${tableId}`).emit('table-data', tableData);
 };
