@@ -134,10 +134,6 @@ const handleRegister = (_screenName, socket, callback) => {
     register({ id: socket.id, name: screenName, chips: INITIAL_CHIPS_AMOUNT })
   );
 
-  // not sure what these lines do, maybe remove?
-  socket.handshake.session.player = 'kardun';
-  socket.handshake.session.save();
-
   callback({
     success: true,
     screenName: screenName,
@@ -149,7 +145,7 @@ const handleRegister = (_screenName, socket, callback) => {
  * When a player requests to sit on a table
  * @param function callback
  */
-const handleSitOnTheTable = (data, callback, socket, io) => {
+const handleSitOnTheTable = (data, callback, socket) => {
   const { seat, tableId, chips } = data;
   if (isNil(seat) || isNil(tableId) || isNil(chips)) {
     callback({ success: false, error: 'invalid data' });
@@ -256,20 +252,32 @@ const handleCheck = (callback, socket) => {
   if (!canCheck(socket.id, table)) {
     callback({ success: false, error: 'check not allowed' });
   }
-  const isEndOfRound = table.lastPlayerToAct === table.toAct;
-
+  const isLastToAct = table.lastPlayerToAct === table.toAct;
   store.dispatch(
     reduceAct({ tableId: table.id, seat: table.toAct, type: 'CHECK' })
   );
+  callback({ success: true });
 
   table = getTableById(tablesSlice())(socket.id);
 
-  // if player is last to act then end current round and start new round
-  if (isEndOfRound) {
-    store.dispatch(reduceEndRound({ tableId: table.id }));
-    emitPublicData(table.id);
+  // not last player to act then pass action to next player
+  if (!isLastToAct) {
+    return emitPublicData(table.id);
   }
-  callback({ success: true });
+
+  // player last to act but not in the river phase then go to next phase
+  if (table.phase !== 'river') {
+    store.dispatch(reduceStartNewPhase({ tableId: table.id }));
+    return;
+  }
+
+  // player is last to act in the river phase then show down and end this round
+  emitShowDownCards(table.id);
+  // TODO wait here few moments
+
+  store.dispatch(reduceEndRound({ tableId: table.id }));
+  store.dispatch(reduceStartRound({}));
+  emitPublicData(table.id);
 };
 
 /**
@@ -525,4 +533,7 @@ function hasSomePlayerBetted(table) {
 }
 
 exports.init = init;
+exports.handleRegister = handleRegister;
+exports.handleEnterRoom = handleEnterRoom;
 exports.handleSitOnTheTable = handleSitOnTheTable;
+exports.handlePostBlind = handlePostBlind;

@@ -22,7 +22,7 @@ const reduceStartRound = (state, { tableId }) => {
 
   table.seats = table.seats.map((seat) => {
     if (isNil(seat)) {
-      return;
+      return null;
     }
     const sitPlayerOut = seat.chipsInPlay <= 0 || seat.sittingOut === true;
     return {

@@ -3,7 +3,7 @@ const socket = require('../socket');
 const { takeSeat, startRound } = require('../../actions');
 const { getDefaultSeatObject } = require('../../selectors/tableSelector');
 
-describe('socket', () => {
+describe.only('socket', () => {
   let mockCallback;
   beforeAll(() => {
     mockCallback = jest.fn();
@@ -11,7 +11,7 @@ describe('socket', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
-  describe('handleSitOnTable', () => {
+  describe.skip('handleSitOnTable', () => {
     let spyDispatch;
     let stateSpy;
     beforeEach(() => {
@@ -367,7 +367,7 @@ describe('socket', () => {
       });
       expect(mockEmit).toHaveBeenCalled();
     });
-    test('do not start new round if only one player present', () => {
+    test.skip('do not start new round if only one player present', () => {
       const mockEmit = jest.fn((arg) => {});
       const broadcast = {
         to: (arg) => {
@@ -389,7 +389,7 @@ describe('socket', () => {
     });
   });
 
-  describe('handlePostBlind', () => {
+  describe.skip('handlePostBlind', () => {
     beforeEach(() => {
       jest.spyOn(store, 'getState').mockReturnValue({
         tables: {
