@@ -183,5 +183,12 @@ describe('basic test with 2 players', () => {
     expect(store.getState().tables.byId[0]).toMatchSnapshot();
   });
 
-  test('player 1 calls small blind with 5', () => {});
+  test('player 1 calls small blind with 5', () => {
+    const socket = mockSockets[0];
+    socketCtrl.handleCall(mockCallback, socket);
+    expect(mockCallback).toHaveBeenCalledWith({ success: true });
+    expect(mockIO.sockets.in).toHaveBeenCalledWith('table-0');
+    expect(mockIO.to).toHaveBeenCalledWith('sid_player2');
+    expect(store.getState().tables.byId[0]).toMatchSnapshot();
+  });
 });

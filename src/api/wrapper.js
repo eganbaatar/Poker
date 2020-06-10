@@ -100,7 +100,16 @@ const getBiggestBet = (table) => {
   );
 };
 
+const getCallAmount = (table, playerId) => {
+  const biggestBet = getBiggestBet(table);
+  const seat = find(table.seats, (seat) => {
+    return seat && seat.id === playerId;
+  });
+  return biggestBet - seat.bet;
+};
+
 exports.getPublicTableData = getPublicTableData;
 exports.getTableDataForLobby = getTableDataForLobby;
 exports.getLastRaise = getLastRaise;
 exports.getBiggestBet = getBiggestBet;
+exports.getCallAmount = getCallAmount;

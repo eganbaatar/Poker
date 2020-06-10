@@ -46,7 +46,7 @@ const reduceStartRound = (state, { tableId }) => {
   // if heads up game then dealer is small blind
   table.toAct =
     activeSeats.length === 2
-      ? (table.toAct = table.button)
+      ? table.button
       : getNextActiveSeat(table.seats, table.button).position;
 };
 

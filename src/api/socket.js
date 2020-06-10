@@ -8,16 +8,16 @@ const {
   takeSeat,
   startRound,
   postBlind,
-  reduceAct,
+  act,
 } = require('../actions');
 const {
   getPlayerById,
   getPlayerByName,
   allPlayersByArray,
 } = require('../selectors/playersSelector');
-const { canPostBlind, canCheck } = require('./validators');
+const { canPostBlind, canCheck, canCall } = require('./validators');
 const { getTableById } = require('../selectors/tableSelector');
-const { getPublicTableData } = require('./wrapper');
+const { getPublicTableData, getCallAmount } = require('./wrapper');
 
 const INITIAL_CHIPS_AMOUNT = 10000;
 
@@ -264,20 +264,6 @@ const handleCheck = (callback, socket) => {
   if (!isLastToAct) {
     return emitPublicData(table.id);
   }
-
-  // player last to act but not in the river phase then go to next phase
-  if (table.phase !== 'river') {
-    store.dispatch(reduceStartNewPhase({ tableId: table.id }));
-    return;
-  }
-
-  // player is last to act in the river phase then show down and end this round
-  emitShowDownCards(table.id);
-  // TODO wait here few moments
-
-  store.dispatch(reduceEndRound({ tableId: table.id }));
-  store.dispatch(reduceStartRound({}));
-  emitPublicData(table.id);
 };
 
 /**
@@ -308,23 +294,31 @@ const handleFold = (callback, socket) => {
  * @param function callback
  */
 const handleCall = (callback, socket) => {
-  if (isPlayerOnTable(socket.id)) {
-    var tableId = players[socket.id].sittingOnTable;
-    var activeSeat = tables[tableId].public.activeSeat;
-
-    if (
-      tables[tableId] &&
-      tables[tableId].seats[activeSeat].socket.id === socket.id &&
-      tables[tableId].public.biggestBet &&
-      ['preflop', 'flop', 'turn', 'river'].indexOf(
-        tables[tableId].public.phase
-      ) > -1
-    ) {
-      // Sending the callback first, because the next functions may need to send data to the same player, that shouldn't be overwritten
-      callback({ success: true });
-      tables[tableId].playerCalled();
-    }
+  const player = getPlayerById(playersSlice())(socket.id);
+  const table = getTableById(tablesSlice())(player.room);
+  if (!canCall(socket.id, table)) {
+    callback({ success: false, error: 'call not allowed' });
   }
+
+  const isLastToAct = table.lastPlayerToAct === table.toAct;
+  store.dispatch(
+    act({
+      tableId: table.id,
+      seat: table.toAct,
+      type: 'CALL',
+      amount: getCallAmount(table),
+    })
+  );
+
+  callback({ success: true });
+  // not last player to act then pass action to next player
+  if (!isLastToAct) {
+    emitPublicData(table.id);
+    emitNextAction(table.id);
+    return;
+  }
+
+  handleLastAct(tableId);
 };
 
 /**
@@ -448,6 +442,27 @@ const handleSendMessage = (message, socket) => {
   }
 };
 
+/**
+ * If player is last to act and did not raised.
+ */
+function handleLastAct(table) {
+  const tableId = table.id;
+  if (table.phase !== 'river') {
+    store.dispatch(startNewPhase({ tableId }));
+    emitPublicData(tableId);
+    emitNextAction(tableId);
+    return;
+  }
+
+  // player is last to act in the river phase then show down and end this round
+  store.dispatch(endRound({ tableId }));
+  emitShowDownCards(tableId);
+
+  store.dispatch(startRound({ tableId }));
+  emitPublicData(tableId);
+  emitNextAction(tableId);
+}
+
 const init = (_io) => {
   io = _io;
   addListeners();
@@ -520,6 +535,10 @@ function getNextAction(table) {
     : 'actNotBettedPot';
 }
 
+function emitShowDownCards(tableId) {
+  console.error('emitShowDownCards() is not implemented!');
+}
+
 function isSomePlayerAllIn(table) {
   return !!find(table.seats, (seat) => {
     return seat && seat.inHand === true && seat.chipsInPlay <= 0;
@@ -537,3 +556,4 @@ exports.handleRegister = handleRegister;
 exports.handleEnterRoom = handleEnterRoom;
 exports.handleSitOnTheTable = handleSitOnTheTable;
 exports.handlePostBlind = handlePostBlind;
+exports.handleCall = handleCall;
