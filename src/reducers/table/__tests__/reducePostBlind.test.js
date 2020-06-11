@@ -19,6 +19,7 @@ describe('postSmallBlind', () => {
   const state = {
     byId: {
       0: {
+        button: 3,
         phase: 'smallBlind',
         toAct: 3,
         smallBlind: 5,
@@ -103,6 +104,7 @@ describe('postBigBlind', () => {
       0: {
         phase: 'bigBlind',
         toAct: 3,
+        button: 2,
         smallBlind: 5,
         bigBlind: 10,
         seats,
@@ -131,6 +133,13 @@ describe('postBigBlind', () => {
     expect(table.phase).toEqual('preFlop');
     expect(table.toAct).toEqual(2);
     expect(table.biggestBet).toEqual(10);
+  });
+  test('big blind is last to act', () => {
+    const newState = reducer(
+      state,
+      postBlind({ tableId: 0, isSmallBlind: false })
+    );
+    const table = getTableById(newState)(0);
     expect(table.lastPlayerToAct).toEqual(3);
   });
   test('small blind has not enough chipsInPlay', () => {
