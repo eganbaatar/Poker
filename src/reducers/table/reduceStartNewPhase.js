@@ -1,0 +1,31 @@
+const {
+  getTableById,
+  getNextActiveSeatInHand,
+} = require('../../selectors/tableSelector');
+
+const getNextPhase = (currentPhase) => {
+  if (currentPhase === 'preFlop') {
+    return 'flop';
+  }
+
+  if (currentPhase === 'flop') {
+    return 'turn';
+  }
+
+  if (currentPhase === 'turn') {
+    return 'river';
+  }
+};
+
+const reduceStartNewPhase = (state, { tableId }) => {
+  const table = getTableById(state)(tableId);
+  table.phase = getNextPhase(table.phase);
+  table.biggestBet = 0;
+  table.lastPlayerToAct = null;
+  table.seats.forEach((seat) => {
+    seat ? (seat.bet = 0) : null;
+  });
+  table.toAct = getNextActiveSeatInHand(table.seats, table.button).position;
+};
+
+module.exports = reduceStartNewPhase;

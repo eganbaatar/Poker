@@ -6,6 +6,7 @@ const {
   postBlind,
   deal,
   act,
+  startNewPhase,
 } = require('../../actions');
 const {
   reduceTakeSeat,
@@ -14,6 +15,7 @@ const {
   reducePostBlind,
   reduceDeal,
   reduceAct,
+  reduceStartNewPhase,
 } = require('.');
 
 const tables = createReducer((state = {}), {
@@ -23,6 +25,8 @@ const tables = createReducer((state = {}), {
   [postBlind]: (state, action) => reducePostBlind(state, action.payload),
   [deal]: (state, action) => reduceDeal(state, action.payload),
   [act]: (state, action) => reduceAct(state, action.payload),
+  [startNewPhase]: (state, action) =>
+    reduceStartNewPhase(state, action.payload),
 });
 
 module.exports = tables;

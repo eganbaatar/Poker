@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`startNewPhase to match snapshot 1`] = `
+Object {
+  "activeSeatsCount": 5,
+  "biggestBet": 0,
+  "board": Array [
+    "4c",
+    "3d",
+    "Kd",
+  ],
+  "button": 1,
+  "gameOn": true,
+  "id": 0,
+  "lastPlayerToAct": null,
+  "phase": "turn",
+  "seatCount": 5,
+  "seats": Array [
+    Object {
+      "bet": 0,
+      "cards": Array [
+        "Ac",
+        "2h",
+      ],
+      "chipsInPlay": 480,
+      "inHand": true,
+      "isAllIn": false,
+      "playerId": "0",
+      "position": 0,
+    },
+    Object {
+      "bet": 0,
+      "cards": Array [
+        "5c",
+        "9h",
+      ],
+      "chipsInPlay": 0,
+      "inHand": true,
+      "isAllIn": true,
+      "playerId": "1",
+      "position": 1,
+    },
+    Object {
+      "bet": 0,
+      "cards": Array [
+        "Ks",
+        "2c",
+      ],
+      "chipsInPlay": 200,
+      "inHand": false,
+      "isAllIn": false,
+      "playerId": "2",
+      "position": 2,
+    },
+    Object {
+      "bet": 0,
+      "cards": Array [
+        "Qc",
+        "10h",
+      ],
+      "chipsInPlay": 0,
+      "inHand": true,
+      "isAllIn": true,
+      "playerId": "3",
+      "position": 3,
+    },
+    Object {
+      "bet": 0,
+      "cards": Array [
+        "Jc",
+        "Jh",
+      ],
+      "chipsInPlay": 210,
+      "inHand": true,
+      "isAllIn": false,
+      "playerId": "4",
+      "position": 4,
+    },
+  ],
+  "toAct": 4,
+}
+`;
