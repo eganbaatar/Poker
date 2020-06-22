@@ -23,7 +23,9 @@ const reduceStartNewPhase = (state, { tableId }) => {
   table.biggestBet = 0;
   table.lastPlayerToAct = null;
   table.seats.forEach((seat) => {
-    seat ? (seat.bet = 0) : null;
+    if (seat) {
+      seat.bet = 0;
+    }
   });
   table.toAct = getNextActiveSeatInHand(table.seats, table.button).position;
 };

@@ -2,13 +2,14 @@ const event = require('./socket-event');
 const { isNil, get, isInteger, find } = require('lodash');
 const store = require('../models/store');
 const {
-  register,
+  act,
   enterRoom,
   leaveRoom,
-  takeSeat,
-  startRound,
   postBlind,
-  act,
+  register,
+  startNewPhase,
+  startRound,
+  takeSeat,
 } = require('../actions');
 const {
   getPlayerById,
@@ -248,22 +249,25 @@ const handlePostBlind = (postedBlind, callback, socket) => {
  * @param function callback
  */
 const handleCheck = (callback, socket) => {
-  const table = getTableById(tablesSlice())(socket.id);
+  const player = getPlayerById(playersSlice())(socket.id);
+  let table = getTableById(tablesSlice())(player.room);
   if (!canCheck(socket.id, table)) {
     callback({ success: false, error: 'check not allowed' });
   }
   const isLastToAct = table.lastPlayerToAct === table.toAct;
-  store.dispatch(
-    reduceAct({ tableId: table.id, seat: table.toAct, type: 'CHECK' })
-  );
+  store.dispatch(act({ tableId: table.id, seat: table.toAct, type: 'CHECK' }));
   callback({ success: true });
 
-  table = getTableById(tablesSlice())(socket.id);
+  table = getTableById(tablesSlice())(player.room);
 
   // not last player to act then pass action to next player
   if (!isLastToAct) {
-    return emitPublicData(table.id);
+    emitPublicData(table.id);
+    emitNextAction(table.id);
+    return;
   }
+
+  handleLastAct(table);
 };
 
 /**
@@ -318,7 +322,7 @@ const handleCall = (callback, socket) => {
     return;
   }
 
-  handleLastAct(tableId);
+  handleLastAct(table.id);
 };
 
 /**
@@ -557,3 +561,4 @@ exports.handleEnterRoom = handleEnterRoom;
 exports.handleSitOnTheTable = handleSitOnTheTable;
 exports.handlePostBlind = handlePostBlind;
 exports.handleCall = handleCall;
+exports.handleCheck = handleCheck;
