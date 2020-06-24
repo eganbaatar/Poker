@@ -26,4 +26,5 @@ interface Table {
   toAct: number;
   board: Card[];
   deck: Card[];
+  dealt: Card[];
 }

@@ -1,8 +1,10 @@
+const { drop } = require('lodash');
 const {
   getTableById,
   getNextActiveSeatInHand,
 } = require('../../selectors/tableSelector');
 const { calculatePot } = require('./potHelper');
+const { deal } = require('../../utils/deck');
 
 const getNextPhase = (currentPhase) => {
   if (currentPhase === 'preFlop') {
@@ -20,6 +22,13 @@ const getNextPhase = (currentPhase) => {
 
 const reduceStartNewPhase = (state, { tableId }) => {
   const table = getTableById(state)(tableId);
+  const { dealt, remaining } = deal(
+    table.deck,
+    table.phase === 'preFlop' ? 4 : 2
+  );
+  table.dealt = table.dealt.concat(dealt);
+  table.board = table.board.concat(drop(dealt));
+  table.deck = remaining;
   table.pot = calculatePot(table);
   table.phase = getNextPhase(table.phase);
   table.biggestBet = 0;

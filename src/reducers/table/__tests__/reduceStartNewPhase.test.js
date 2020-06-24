@@ -16,6 +16,9 @@ describe('startNewPhase', () => {
           pot: {
             current: 240,
           },
+          deck: ['Ts', 'Js', '3c', '4s'],
+          dealt: ['7d', '9c', '2h'],
+          board: ['7d', '9c', '2h'],
           seats: [
             {
               position: 0,
@@ -64,6 +67,49 @@ describe('startNewPhase', () => {
             },
           ],
           board: ['4c', '3d', 'Kd'],
+        },
+      },
+    };
+    const newState = reducer(state, startNewPhase({ tableId: 0 }));
+    const table = getTableById(newState)(0);
+    expect(table).toMatchSnapshot();
+  });
+  test('deal flop', () => {
+    const state = {
+      byId: {
+        0: {
+          id: 0,
+          gameOn: true,
+          seatCount: 5,
+          activeSeatsCount: 5,
+          button: 1,
+          phase: 'preFlop',
+          pot: {
+            current: 0,
+          },
+          deck: ['7d', '9c', '2h', 'Ts', 'Js', '3c', '4s'],
+          dealt: [],
+          seats: [
+            {
+              position: 0,
+              playerId: '0',
+              chipsInPlay: 480,
+              inHand: true,
+              isAllIn: false,
+              cards: ['Ac', '2h'],
+              bet: 120,
+            },
+            {
+              position: 1,
+              playerId: '1',
+              chipsInPlay: 50,
+              inHand: true,
+              isAllIn: false,
+              cards: ['5c', '9h'],
+              bet: 80,
+            },
+          ],
+          board: [],
         },
       },
     };

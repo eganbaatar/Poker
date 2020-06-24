@@ -200,4 +200,13 @@ describe('basic test with 2 players', () => {
     expect(mockIO.to).toHaveBeenCalledWith('sid_player2');
     expect(store.getState().tables.byId[0]).toMatchSnapshot();
   });
+
+  test('Flop: player 2 (BB) bets 15', () => {
+    const socket = mockSockets[1];
+    socketCtrl.handleBet(15, mockCallback, socket);
+    expect(mockCallback).toHaveBeenCalledWith({ success: true });
+    expect(mockIO.sockets.in).toHaveBeenCalledWith('table-0');
+    expect(mockIO.to).toHaveBeenCalledWith('sid_player1');
+    expect(store.getState().tables.byId[0]).toMatchSnapshot();
+  });
 });

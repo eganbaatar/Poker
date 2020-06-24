@@ -16,7 +16,7 @@ const {
   getPlayerByName,
   allPlayersByArray,
 } = require('../selectors/playersSelector');
-const { canPostBlind, canCheck, canCall } = require('./validators');
+const { canPostBlind, canCheck, canCall, canBet } = require('./validators');
 const { getTableById } = require('../selectors/tableSelector');
 const { getPublicTableData, getCallAmount } = require('./wrapper');
 
@@ -313,31 +313,31 @@ const handleCall = (callback, socket) => {
  * @param function callback
  */
 const handleBet = (amount, callback, socket) => {
-  if (isPlayerOnTable(socket.id)) {
-    var tableId = players[socket.id].sittingOnTable;
-    var activeSeat = tables[tableId].public.activeSeat;
-
-    if (
-      tables[tableId] &&
-      tables[tableId].seats[activeSeat].socket.id === socket.id &&
-      !tables[tableId].public.biggestBet &&
-      ['preflop', 'flop', 'turn', 'river'].indexOf(
-        tables[tableId].public.phase
-      ) > -1
-    ) {
-      // Validating the bet amount
-      amount = parseInt(amount);
-      if (
-        amount &&
-        isFinite(amount) &&
-        amount <= tables[tableId].seats[activeSeat].public.chipsInPlay
-      ) {
-        // Sending the callback first, because the next functions may need to send data to the same player, that shouldn't be overwritten
-        callback({ success: true });
-        tables[tableId].playerBetted(amount);
-      }
-    }
+  const player = getPlayerById(playersSlice())(socket.id);
+  const table = getTableById(tablesSlice())(player.room);
+  if (!canBet(socket.id, table)) {
+    callback({ success: false, error: 'bet not allowed' });
   }
+
+  const isLastToAct = table.lastPlayerToAct === table.toAct;
+  store.dispatch(
+    act({
+      tableId: table.id,
+      seat: table.toAct,
+      type: 'BET',
+      amount,
+    })
+  );
+
+  callback({ success: true });
+  // not last player to act then pass action to next player
+  if (!isLastToAct) {
+    emitPublicData(table.id);
+    emitNextAction(table.id);
+    return;
+  }
+
+  handleLastAct(table.id);
 };
 
 /**
@@ -543,3 +543,4 @@ exports.handleSitOnTheTable = handleSitOnTheTable;
 exports.handlePostBlind = handlePostBlind;
 exports.handleCall = handleCall;
 exports.handleCheck = handleCheck;
+exports.handleBet = handleBet;

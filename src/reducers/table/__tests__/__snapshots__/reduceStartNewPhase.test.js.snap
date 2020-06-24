@@ -1,5 +1,64 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`startNewPhase deal flop 1`] = `
+Object {
+  "activeSeatsCount": 5,
+  "biggestBet": 0,
+  "board": Array [
+    "9c",
+    "2h",
+    "Ts",
+  ],
+  "button": 1,
+  "dealt": Array [
+    "7d",
+    "9c",
+    "2h",
+    "Ts",
+  ],
+  "deck": Array [
+    "Js",
+    "3c",
+    "4s",
+  ],
+  "gameOn": true,
+  "id": 0,
+  "lastPlayerToAct": null,
+  "phase": "flop",
+  "pot": Object {
+    "current": 200,
+  },
+  "seatCount": 5,
+  "seats": Array [
+    Object {
+      "bet": 0,
+      "cards": Array [
+        "Ac",
+        "2h",
+      ],
+      "chipsInPlay": 480,
+      "inHand": true,
+      "isAllIn": false,
+      "playerId": "0",
+      "position": 0,
+    },
+    Object {
+      "bet": 0,
+      "cards": Array [
+        "5c",
+        "9h",
+      ],
+      "chipsInPlay": 50,
+      "inHand": true,
+      "isAllIn": false,
+      "playerId": "1",
+      "position": 1,
+    },
+  ],
+  "toAct": 0,
+}
+`;
+
 exports[`startNewPhase to match snapshot 1`] = `
 Object {
   "activeSeatsCount": 5,
@@ -8,8 +67,20 @@ Object {
     "4c",
     "3d",
     "Kd",
+    "Js",
   ],
   "button": 1,
+  "dealt": Array [
+    "7d",
+    "9c",
+    "2h",
+    "Ts",
+    "Js",
+  ],
+  "deck": Array [
+    "3c",
+    "4s",
+  ],
   "gameOn": true,
   "id": 0,
   "lastPlayerToAct": null,
