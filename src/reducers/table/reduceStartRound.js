@@ -9,6 +9,7 @@ const reduceStartRound = (state, { tableId }) => {
   const defaultTableInfo = {
     gameOn: true,
     board: [],
+    dealt: [],
     phase: 'smallBlind',
     deck: deck.shuffle(),
   };

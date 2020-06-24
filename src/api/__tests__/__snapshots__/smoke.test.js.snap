@@ -5,13 +5,19 @@ Object {
   "activeSeatsCount": 2,
   "bigBlind": 10,
   "biggestBet": 0,
-  "board": Array [],
+  "board": Array [
+    "9c",
+    "2h",
+    "Ts",
+  ],
   "button": 3,
-  "deck": Array [
+  "dealt": Array [
     "7d",
     "9c",
     "2h",
     "Ts",
+  ],
+  "deck": Array [
     "Js",
     "3c",
     "4s",
@@ -63,7 +69,7 @@ Object {
   ],
   "gameOn": true,
   "id": 0,
-  "lastPlayerToAct": null,
+  "lastPlayerToAct": 3,
   "maxActionTimeout": 60000,
   "maxBuyIn": 1000,
   "minActionTimeout": 15000,
@@ -90,9 +96,9 @@ Object {
     },
     undefined,
     Object {
-      "bet": 0,
+      "bet": 15,
       "cards": Array [],
-      "chipsInPlay": 490,
+      "chipsInPlay": 475,
       "inHand": true,
       "isAllIn": false,
       "playerId": "sid_player2",
@@ -113,6 +119,7 @@ Object {
   "biggestBet": 10,
   "board": Array [],
   "button": 3,
+  "dealt": Array [],
   "deck": Array [
     "7d",
     "9c",
@@ -258,6 +265,7 @@ Object {
   "biggestBet": 5,
   "board": Array [],
   "button": 3,
+  "dealt": Array [],
   "deck": Array [
     "7d",
     "9c",
@@ -391,13 +399,19 @@ Object {
   "activeSeatsCount": 2,
   "bigBlind": 10,
   "biggestBet": 0,
-  "board": Array [],
+  "board": Array [
+    "9c",
+    "2h",
+    "Ts",
+  ],
   "button": 3,
-  "deck": Array [
+  "dealt": Array [
     "7d",
     "9c",
     "2h",
     "Ts",
+  ],
+  "deck": Array [
     "Js",
     "3c",
     "4s",
@@ -542,6 +556,7 @@ Object {
   "biggestBet": 10,
   "board": Array [],
   "button": 3,
+  "dealt": Array [],
   "deck": Array [
     "7d",
     "9c",
@@ -644,6 +659,7 @@ Object {
   "bigBlind": 10,
   "board": Array [],
   "button": 3,
+  "dealt": Array [],
   "deck": Array [
     "7d",
     "9c",
