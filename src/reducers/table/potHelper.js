@@ -3,10 +3,7 @@ const { filter, orderBy, sumBy } = require('lodash');
 const calculatePot = (table) => {
   const pot = table.pot || { current: 0 };
   const orderedSeatsWithBet = orderBy(
-    filter(
-      table.seats,
-      (seat) => seat && seat.sittingOut !== true && seat.bet > 0
-    ),
+    filter(table.seats, (seat) => seat && seat.bet > 0),
     ['bet', 'chipsInPlay'],
     ['asc']
   );
@@ -37,6 +34,7 @@ const calculatePot = (table) => {
     // current pot should be added to side pot
     if (pot.current > 0) {
       pot[seat.position] += pot.current;
+      pot.current = 0;
     }
   }
   pot.current = remainingPot;

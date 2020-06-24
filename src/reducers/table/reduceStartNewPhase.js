@@ -2,6 +2,7 @@ const {
   getTableById,
   getNextActiveSeatInHand,
 } = require('../../selectors/tableSelector');
+const { calculatePot } = require('./potHelper');
 
 const getNextPhase = (currentPhase) => {
   if (currentPhase === 'preFlop') {
@@ -19,6 +20,7 @@ const getNextPhase = (currentPhase) => {
 
 const reduceStartNewPhase = (state, { tableId }) => {
   const table = getTableById(state)(tableId);
+  table.pot = calculatePot(table);
   table.phase = getNextPhase(table.phase);
   table.biggestBet = 0;
   table.lastPlayerToAct = null;

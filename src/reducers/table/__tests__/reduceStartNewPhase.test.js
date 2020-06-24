@@ -13,6 +13,9 @@ describe('startNewPhase', () => {
           activeSeatsCount: 5,
           button: 1,
           phase: 'flop',
+          pot: {
+            current: 240,
+          },
           seats: [
             {
               position: 0,

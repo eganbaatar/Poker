@@ -71,7 +71,7 @@ describe('potHelper functions', () => {
       const table = {
         id: 0,
         pot: {
-          current: 0,
+          current: 50,
         },
         seats: [
           {
@@ -96,8 +96,8 @@ describe('potHelper functions', () => {
         ],
       };
       expect(calculatePot(table)).toEqual({
-        '0': 600,
-        '2': 200,
+        0: 650,
+        2: 200,
         current: 0,
       });
     });
