@@ -197,7 +197,7 @@ describe('basic test with 2 players', () => {
     socketCtrl.handleCheck(mockCallback, socket);
     expect(mockCallback).toHaveBeenCalledWith({ success: true });
     expect(mockIO.sockets.in).toHaveBeenCalledWith('table-0');
-    expect(mockIO.to).toHaveBeenCalledWith('sid_player1');
+    expect(mockIO.to).toHaveBeenCalledWith('sid_player2');
     expect(store.getState().tables.byId[0]).toMatchSnapshot();
   });
 });

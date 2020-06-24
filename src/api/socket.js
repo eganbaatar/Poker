@@ -205,24 +205,6 @@ const handleSitOnTheTable = (data, callback, socket) => {
 };
 
 /**
- * When a player who sits on the table but is not sitting in, requests to sit in
- * @param function callback
- */
-const handleSitIn = (callback, socket) => {
-  if (
-    players[socket.id] &&
-    players[socket.id].sittingOnTable !== false &&
-    players[socket.id].seat !== null &&
-    !players[socket.id].public.sittingIn
-  ) {
-    // Getting the table id from the player object
-    var tableId = players[socket.id].sittingOnTable;
-    tables[tableId].playerSatIn(players[socket.id].seat);
-    callback({ success: true });
-  }
-};
-
-/**
  * When a player posts a blind
  * @param bool postedBlind (Shows if the user posted the blind or not)
  * @param function callback
@@ -482,7 +464,6 @@ const addListeners = () => {
     socket.on(event.sitOnTheTable, (data, callback) =>
       handleSitOnTheTable(data, callback, socket, io)
     );
-    socket.on(event.sitIn, (callback) => handleSitIn(callback, socket));
     socket.on(event.postBlind, (postBlind, callback) =>
       handlePostBlind(postBlind, callback, socket)
     );

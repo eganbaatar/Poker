@@ -350,6 +350,9 @@ Object {
   "minBuyIn": 500,
   "name": "Winna winna chicken dinna: 5/10 aar",
   "phase": "flop",
+  "pot": Object {
+    "current": 20,
+  },
   "privateTable": false,
   "seats": Array [
     null,
