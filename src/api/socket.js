@@ -292,7 +292,7 @@ const handleCall = (callback, socket) => {
       tableId: table.id,
       seat: table.toAct,
       type: 'CALL',
-      amount: getCallAmount(table),
+      amount: getCallAmount(table, player.id),
     })
   );
 
@@ -304,7 +304,7 @@ const handleCall = (callback, socket) => {
     return;
   }
 
-  handleLastAct(table.id);
+  handleLastAct(table);
 };
 
 /**
@@ -319,7 +319,6 @@ const handleBet = (amount, callback, socket) => {
     callback({ success: false, error: 'bet not allowed' });
   }
 
-  const isLastToAct = table.lastPlayerToAct === table.toAct;
   store.dispatch(
     act({
       tableId: table.id,
@@ -328,16 +327,9 @@ const handleBet = (amount, callback, socket) => {
       amount,
     })
   );
-
   callback({ success: true });
-  // not last player to act then pass action to next player
-  if (!isLastToAct) {
-    emitPublicData(table.id);
-    emitNextAction(table.id);
-    return;
-  }
-
-  handleLastAct(table.id);
+  emitPublicData(table.id);
+  emitNextAction(table.id);
 };
 
 /**
@@ -348,10 +340,8 @@ const handleRaise = (amount, callback, socket) => {
   const player = getPlayerById(playersSlice())(socket.id);
   const table = getTableById(tablesSlice())(player.room);
   if (!canRaise(socket.id, table)) {
-    callback({ success: false, error: 'bet not allowed' });
+    callback({ success: false, error: 'raise not allowed' });
   }
-
-  const isLastToAct = table.lastPlayerToAct === table.toAct;
   store.dispatch(
     act({
       tableId: table.id,
@@ -360,16 +350,9 @@ const handleRaise = (amount, callback, socket) => {
       amount,
     })
   );
-
   callback({ success: true });
-  // not last player to act then pass action to next player
-  if (!isLastToAct) {
-    emitPublicData(table.id);
-    emitNextAction(table.id);
-    return;
-  }
-
-  handleLastAct(table.id);
+  emitPublicData(table.id);
+  emitNextAction(table.id);
 };
 
 /**

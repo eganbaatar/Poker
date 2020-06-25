@@ -103,7 +103,7 @@ const getBiggestBet = (table) => {
 const getCallAmount = (table, playerId) => {
   const biggestBet = getBiggestBet(table);
   const seat = find(table.seats, (seat) => {
-    return seat && seat.id === playerId;
+    return seat && seat.playerId === playerId;
   });
   return biggestBet - seat.bet;
 };
