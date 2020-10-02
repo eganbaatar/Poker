@@ -8,6 +8,8 @@ let players = {};
 let tables = [];
 
 const isPlayerOnTable = (players, pid) => {
+  if (!pid) return false
+  
   const playerInfo = players[pid];
   return (
     !isNil(playerInfo) &&
