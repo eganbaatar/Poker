@@ -42,7 +42,7 @@ app.directive('seat', [
         scope.seatOccupied = function (seat) {
           return (
             !scope.sittingOnTable ||
-            (typeof scope.player !== 'undefinde' &&
+            (typeof scope.player !== 'undefined' &&
               scope.player &&
               scope.player.name)
           );

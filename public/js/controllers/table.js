@@ -430,6 +430,10 @@ app.controller('TableController', [
     // When the table data have changed
     socket.on('table-data', function (data) {
       $scope.table = data;
+
+      //force re-render, fix show up cards to all clients correctly and fix all-in
+      $scope.$apply();
+
       switch (data.log.action) {
         case 'fold':
           sounds.playFoldSound();
